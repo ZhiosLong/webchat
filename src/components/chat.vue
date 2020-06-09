@@ -311,6 +311,7 @@
 </template>
 
 <script>
+import { face } from '../../static/js/face'
 export default {
     name: 'chat',
     data () {
@@ -361,11 +362,11 @@ export default {
         friend_info:'',
         send_text:'',
         sendEmptyFlag: 0,
-        //friendNickname_show:''
-        //用于装载聊天信息
+        // friendNickname_show:''
+        // 用于装载聊天信息
         chat_list:[],
         obj:'',
-        //存储好友请求
+        // 存储好友请求
         request_list:[],
         // 词云形状
         imageShape:'../../static/img/twitter.png',
@@ -374,31 +375,24 @@ export default {
         }
     },
     created:function(){
-
+        
     },
     mounted: function(){
-        const params = this.$route.params;
-        if(params.userName){
-            this.userName = params.userName;
-            console.log('欢迎, ' + this.userName);
-        }
-        else{
-            this.goBack();
-        }
-        // 历史返回重新登陆
-        if (window.history && window.history.pushState) {
-            history.pushState(null, null, document.URL)
-            window.addEventListener('popstate', this.goBack, false)
-        }
+
+        this.userName = window.sessionStorage.user;   // 从session中获取userName
+        console.log('欢迎, ' + this.userName);
+
         var self = this;
-        //表情启动
-        this.obj=new Face({
+
+        // 表情启动
+        self.obj=new Face({
             el:document.querySelector('.face_icon'),
             callBack:function (face) {
                 self.send_text+="〖"+face.title+"〗";
                 document.querySelector('.face-warp').style.display='none';
             }
-        });
+        });  
+
         // 获取用户信息
         axios.post(
             'https://afwt8c.toutiao15.com/get_user',
@@ -418,6 +412,7 @@ export default {
         }).finally(function() {
             console.log('请求用户信息成功');
         });
+
         // 获取用户头像
         axios.post(
             'https://afwt8c.toutiao15.com/get_headImg',
@@ -435,6 +430,7 @@ export default {
         }).finally(function() {
             console.log('请求头像成功');
         });
+
         // 请求最近消息列表
         axios.post(
             'https://afwt8c.toutiao15.com/get_message_list',
@@ -444,69 +440,19 @@ export default {
         ).then((res)=>{
             // 处理正常结果
             const data = res.data;
-            //console.log(data.result);
-            //console.log(data.result.length);
             self.messageList = data.result;
             // console.log(moment(data.result[0].createdAt).utcOffset(480).format('YYYY-MM-DD HH:mm:ss'));
             for(var i=0; i<self.messageList.length; i++){
                 self.messageList[i].message = self.obj.replaceFace(self.messageList[i].message);
             }
-            if(data.result.length!=0) {
-                if(self.messageList[0].user1 == this.userName)
-                    self.chat_title=self.messageList[0].user2;
-                else
-                    self.chat_title=self.messageList[0].user1;
-                // 请求列表第一个人的聊天记录
-                axios.post(
-                    'https://afwt8c.toutiao15.com/get_chat_record',
-                    {
-                        userName:this.userName,
-                        friendName:this.chat_title,
-                        num: 5,
-                        isRead:true
-                    }
-                ).then((res)=>{
-                    //处理正常结果
-                    const data = res.data;
-                    console.log(data.result.length);
-                    this.chat_list = [];
-                    for(var i = data.result.length - 1;i >= 0;i--)
-                    {
-                        data.result[i].message = self.obj.replaceFace(data.result[i].message);
-                        if(data.result[i].sender == 1){
-                            this.chat_list.push({source: data.result[i].user1, des:data.result[i].user2, message:data.result[i].message});
-                        }
-                        else{
-                            this.chat_list.push({source: data.result[i].user2, des:data.result[i].user1, message:data.result[i].message});
-                        }
-                    };
-                    const count = data.count;
-                    console.log("状态更新：" + count);
-                    if(count != 0)
-                    {
-                        var msg = {source:self.userName, des:self.chat_title, message : '', type : "state"};
-                        socket.emit('send message', msg);
-                    }
-                }).catch(function(error) {
-                    // 处理异常结果
-                    console.log(JSON.stringify(error));
-                    console.log(error.result);
-                }).finally(function() {
-                    console.log("获取聊天记录成功！")
-                });
-            }
-            //console.log(self.messageList[0].createdAt);
-
-            // for(var index = 0;index < self.messageList.length;index++){
-            //     console.log(self.messageList[index]);
-            // }
         }).catch(function(error) {
-            // 处理异常结果
-            console.log(JSON.stringify(error));
-            console.log(error.result);
+            // 处理异常结果           
+            console.log(JSON.stringify(error));           
+            console.log(error.result);           
         }).finally(function() {
           console.log('请求最近消息列表成功');
         });
+
         // 请求好友列表
         axios.post(
             'https://afwt8c.toutiao15.com/get_friend_list',
@@ -524,24 +470,15 @@ export default {
         }).finally(function() {
           console.log('请求好友列表成功');
         });
-        //与服务器建立连接，持续监听服务器发来的消息
+
+        // 与服务器建立连接，持续监听服务器发来的消息
         socket.emit('user_info', {
             username: this.userName,
         });
         socket.on(this.userName, function(msg){
-            //收到的信息类型为：消息
+            // 收到的信息类型为：消息
             if(msg.type == "message"){
                 let userExist = 0;
-                /*for(let i = 0;i < self.messageList.length;i++)
-                {
-                    let tempName = (self.messageList[i].user1 == self.userName ? self.messageList[i].user2 : self.messageList[i].user1);
-                    if(msg.source == tempName)
-                    {
-                        self.messageList[i].message = msg.message;
-                        userExist = 1;
-                        break;
-                    }
-                }*/
                 if(userExist == 0)
                 {
                     // 刷新最近消息列表
@@ -617,14 +554,14 @@ export default {
             }
             else if(msg.type == "request")  //收到的信息类型为：好友请求
             {
-                //获取好友请求
+                // 获取好友请求
                 axios.post(
                     'https://afwt8c.toutiao15.com/get_friend_request',
                     {
                         userName: self.userName
                     }
                 ).then((res)=>{
-                    //处理正常结果
+                    // 处理正常结果
                     const data = res.data;
                     self.request_list = data.result;
                 }).catch(function(error) {
@@ -635,7 +572,7 @@ export default {
                     console.log('更新好友请求成功');
                 });
             }
-            else if(msg.type == "state")    //收到的信息类型为：状态更新
+            else if(msg.type == "state")    // 收到的信息类型为：状态更新
             {
                 if(msg.source == self.chat_title){
                     // 请求列表选定的人的聊天记录
@@ -650,7 +587,7 @@ export default {
                                 isRead: false
                             }
                         ).then((res)=>{
-                            //处理正常结果
+                            // 处理正常结果
                             const data = res.data;
                             console.log(data.result.length);
                             console.log(self.chat_title);
@@ -683,15 +620,17 @@ export default {
     beforeDestroy: function(){
     },
     methods:{
+
         logout(){
             // 用户登出，清除session
-            //window.sessionStorage.removeItem('user');
+            window.sessionStorage.removeItem('user');
             console.log("用户登出！");
             alert("已登出！");
 
             // 返回登录页
             this.$router.push('/');
         },
+
         // 格式化时间
         dateFormat:function(time) {
             var date=new Date(new Date(time).getTime());
@@ -743,6 +682,7 @@ export default {
                 return hours+":"+minutes+":"+seconds;
             }
         },
+
         changeIcon(index){
             this.icon_show=index;
             this.more_chat = 1;
@@ -761,7 +701,7 @@ export default {
                     const data = res.data;
                     //console.log(data.result);
                     //console.log(data.result.length);
-                    this.messageList = data.result;
+                    this.messageList = data.result;                  
                     if(data.result.length!=0 && this.chat_title == '') {
                         if(this.messageList[0].user1 == this.userName)
                             this.chat_title=this.messageList[0].user2;
@@ -881,9 +821,12 @@ export default {
               });
             }
         },
+
         changeMessage(index){
             //this.message_show=index;
             //this.chat_title=this.messageList[index].friendName;
+            console.log("this.message_show", this.message_show);
+            console.log("index = ", index);
             if(this.message_show != index){
                 this.message_show = index;
                 this.more_chat = 1;
@@ -891,7 +834,7 @@ export default {
                 this.no_chat = 0;
                 this.chat_title=(this.messageList[index].user1 == this.userName?this.messageList[index].user2:this.messageList[index].user1);
                 console.log("changeMessage",this.chat_title);
-                //默认获取最近的5条聊天记录
+                // 默认获取最近的5条聊天记录
                 axios.post(
                     'https://afwt8c.toutiao15.com/get_chat_record',
                     {
@@ -901,7 +844,7 @@ export default {
                         isRead:true
                     }
                 ).then((res)=>{
-                    //处理正常结果
+                    // 处理正常结果
                     const data = res.data;
                     this.chat_list = [];
                     for(var i = data.result.length - 1;i >= 0;i--)
@@ -930,6 +873,7 @@ export default {
                 });
             }
         },
+
         // 获取更多信息
         getMoreChat(){
             this.chat_num += 1;
@@ -943,7 +887,7 @@ export default {
                     isRead:false
                 }
             ).then((res)=>{
-                //处理正常结果
+                // 处理正常结果
                 const data = res.data;
                 this.chat_list = [];
                 if(data.result.length < number){
@@ -968,6 +912,7 @@ export default {
                 console.log("获取更多聊天记录成功！")
             });
         },
+
         // 修改头像昵称
         confirm_btn(){
             if(this.newNick==''){
@@ -1009,6 +954,7 @@ export default {
             });
             this.myHead = this.headimgArr[this.head_index];
         },
+
         changeFriend(index){
             /*var self = this;
             this.friend_show=index;
@@ -1040,6 +986,7 @@ export default {
                 });
             }
         },
+
         sendMessage(){
             if(this.send_text == ''){
                 var _this=this;
@@ -1104,7 +1051,7 @@ export default {
                             isRead:false
                         }
                     ).then((res)=>{
-                        //处理正常结果
+                        // 处理正常结果
                         const data = res.data;
                         console.log(data.result.length);
                         this.chat_list = [];
@@ -1134,6 +1081,7 @@ export default {
                 });
             }
         },
+
         //搜索好友
         searchUser(index){
             console.log(this.searchName);
@@ -1144,7 +1092,7 @@ export default {
                     searchName:this.searchName
                 }
             ).then((res)=>{
-                //处理正常结果
+                // 处理正常结果
                 const data = res.data;
                 console.log(data.result);
                 this.userList = [];
@@ -1157,7 +1105,7 @@ export default {
                         this.userList.push(data.result[i]);
                 }
             }).catch(function(error) {
-                //处理异常结果
+                // 处理异常结果
                 console.log(JSON.stringify(error));
                 console.log(error.result);
             }).finally(function() {
@@ -1166,13 +1114,15 @@ export default {
             this.icon_show=index;
             this.not_add=0;
         },
-        //查看用户个人资料
+
+        // 查看用户个人资料
         showUserInfo(index){
             this.not_add=1;
             this.userInfo=this.userList[index];
             this.default_note="我是" + this.userName;
         },
-        //添加好友
+
+        // 添加好友
         addFriend(){
             axios.post(
                 'https://afwt8c.toutiao15.com/add_friend',
@@ -1182,14 +1132,14 @@ export default {
                     note:this.default_note
                 }
             ).then((res)=>{
-                //处理正常结果
+                // 处理正常结果
                 const data = res.data;
                 console.log(data.result);
                 if(data.result == '添加好友成功！')
                 {
                     var msg = {source:this.userName, des:this.userInfo['userName'], message : "你们已经是好友了，马上开始聊天吧", type : "message"};
                     socket.emit('send message', msg);
-                    //将这条消息保存到数据库
+                    // 将这条消息保存到数据库
                     axios.post(
                         'https://afwt8c.toutiao15.com/add_chat_record',
                         {
@@ -1198,7 +1148,7 @@ export default {
                             message:msg.message,
                         }
                     ).then((res)=>{
-                        //处理正常结果
+                        // 处理正常结果
 
                     }).catch((error)=>{
                         // 处理异常结果
@@ -1207,14 +1157,14 @@ export default {
                     }).finally(()=>{
                         console.log('聊天记录已保存至数据库');
                     })
-                    //更新好友请求列表
+                    // 更新好友请求列表
                     axios.post(
                         'https://afwt8c.toutiao15.com/get_friend_request',
                         {
                             userName: this.userName
                         }
                     ).then((res)=>{
-                        //处理正常结果
+                        // 处理正常结果
                         const data = res.data;
                         this.request_list = data.result;
                         console.log(this.request_list);
@@ -1227,13 +1177,13 @@ export default {
                         //console.log(self.friend_info);
                     });
                 }
-                //广播一条好友请求，让收方更新请求列表
+                // 广播一条好友请求，让收方更新请求列表
                 else{
                     var msg = {source:this.userName, des:this.userInfo['userName'], message : "", type : "request"};
                     socket.emit('send message', msg);
                 }
             }).catch(function(error) {
-                //处理异常结果
+                // 处理异常结果
                 console.log(JSON.stringify(error));
                 console.log(error.result);
             }).finally(function() {
@@ -1275,7 +1225,7 @@ export default {
                 })
             } */
         },
-        //点击搜索结果中的好友跳转页面
+        // 点击搜索结果中的好友跳转页面
         jumpMessage_Search(index)
         {
             this.icon_show = 0;
@@ -1290,7 +1240,8 @@ export default {
                 }
             }
         },
-        //接受好友请求
+
+        // 接受好友请求
         accept_request(index){
             axios.post(
                 'https://afwt8c.toutiao15.com/add_friend',
@@ -1299,7 +1250,7 @@ export default {
                     friendName:this.request_list[index].sender
                 }
             ).then((res)=>{
-                //处理正常结果
+                // 处理正常结果
                 const data = res.data;
                 console.log(data.result);
                 if(data.result == '添加好友成功！')
@@ -1316,7 +1267,7 @@ export default {
                             message:msg.message,
                         }
                     ).then((res)=>{
-                        //处理正常结果
+                        // 处理正常结果
 
                     }).catch((error)=>{
                         // 处理异常结果
@@ -1344,13 +1295,14 @@ export default {
                     });
                 }
             }).catch(function(error) {
-                //处理异常结果
+                // 处理异常结果
                 console.log(JSON.stringify(error));
                 console.log(error.result);
             }).finally(function() {
 
             })
         },
+        
         // 显示设置框
         setbox(){
             if(this.setbox_show==0) this.setbox_show=1;
@@ -1362,11 +1314,13 @@ export default {
             else this.alterbox_show=0;
             this.setbox_show=0;
         },
+
         // 隐藏设置框
         hidebox(){
             this.alterbox_show=0;
             this.setbox_show=0;
         },
+
         // 上传图片
         updataImg(){
             var self = this;
@@ -1377,9 +1331,9 @@ export default {
                 $("#base64Img").attr("src",reader.result);
                 self.imageUrl = reader.result;
                 // console.log(self.imageUrl);
-                //刷新头像
+                // 刷新头像
                 self.myHead = reader.result;
-                //上传到数据库
+                // 上传到数据库
                 axios.post(
                     'https://afwt8c.toutiao15.com/set_headImg',
                     {
@@ -1403,6 +1357,7 @@ export default {
             let href = window.location.href
             window.location.href = href.split('#')[0]
         },
+
         // 修改用户信息
         changeInformation(){
             axios.post(
@@ -1425,6 +1380,7 @@ export default {
                 console.log('修改完成！');
             });
         },
+
         // 发送图片
         sendImg(){
             var self = this;
@@ -1435,7 +1391,7 @@ export default {
                 $("#base64Img").attr("src",reader.result);
                 self.imageUrl = reader.result;
                 // console.log(self.imageUrl);
-                //上传到数据库
+                // 上传到数据库
                 self.send_text = reader.result;
                 console.log(reader.result);
                 self.sendMessage();
@@ -1444,6 +1400,7 @@ export default {
                 reader.readAsDataURL(file);
             }
         },
+
         // 词云
         renderCloud() {
             var words = []
@@ -1536,6 +1493,7 @@ export default {
             // 开始分词
             console.log(segment.doSegment('这是一个基于Node.js的中文分词模块。'));*/
         },
+
         // 修改词云形状
         changeImg(index){
             this.imageShape = this.imgList[index];
