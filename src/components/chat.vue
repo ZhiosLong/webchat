@@ -1087,7 +1087,7 @@ export default {
         showUserInfo(index){
             this.not_add=1;
             this.userInfo=this.userList[index];
-            this.default_note="我是" + this.userInfo['nickname'];
+            this.default_note="我是" + this.userName;
         },
         //添加好友
         addFriend(){
@@ -1095,7 +1095,8 @@ export default {
                 'https://afwt8c.toutiao15.com/add_friend',
                 {
                     userName:this.userName,
-                    friendName:this.userInfo['userName']
+                    friendName:this.userInfo['userName'],
+                    note:this.default_note
                 }
             ).then((res)=>{
                 //处理正常结果
