@@ -451,55 +451,6 @@ export default {
             for(var i=0; i<self.messageList.length; i++){
                 self.messageList[i].message = self.obj.replaceFace(self.messageList[i].message);
             }
-            if(data.result.length!=0) {
-                if(self.messageList[0].user1 == this.userName)
-                    self.chat_title=self.messageList[0].user2;
-                else
-                    self.chat_title=self.messageList[0].user1;
-                // 请求列表第一个人的聊天记录
-                axios.post(
-                    'https://afwt8c.toutiao15.com/get_chat_record',
-                    {
-                        userName:this.userName,
-                        friendName:this.chat_title,
-                        num: 5,
-                        isRead:true
-                    }
-                ).then((res)=>{
-                    //处理正常结果
-                    const data = res.data;
-                    console.log(data.result.length);
-                    this.chat_list = [];
-                    for(var i = data.result.length - 1;i >= 0;i--)
-                    {
-                        data.result[i].message = self.obj.replaceFace(data.result[i].message);
-                        if(data.result[i].sender == 1){
-                            this.chat_list.push({source: data.result[i].user1, des:data.result[i].user2, message:data.result[i].message});
-                        }
-                        else{
-                            this.chat_list.push({source: data.result[i].user2, des:data.result[i].user1, message:data.result[i].message});
-                        }
-                    };
-                    const count = data.count;
-                    console.log("状态更新：" + count);
-                    if(count != 0)
-                    {
-                        var msg = {source:self.userName, des:self.chat_title, message : '', type : "state"};
-                        socket.emit('send message', msg);
-                    }
-                }).catch(function(error) {
-                    // 处理异常结果
-                    console.log(JSON.stringify(error));
-                    console.log(error.result);
-                }).finally(function() {
-                    console.log("获取聊天记录成功！")
-                });
-            }
-            //console.log(self.messageList[0].createdAt);
-
-            // for(var index = 0;index < self.messageList.length;index++){
-            //     console.log(self.messageList[index]);
-            // }
         }).catch(function(error) {
             // 处理异常结果
             console.log(JSON.stringify(error));
@@ -532,16 +483,6 @@ export default {
             //收到的信息类型为：消息
             if(msg.type == "message"){
                 let userExist = 0;
-                /*for(let i = 0;i < self.messageList.length;i++)
-                {
-                    let tempName = (self.messageList[i].user1 == self.userName ? self.messageList[i].user2 : self.messageList[i].user1);
-                    if(msg.source == tempName)
-                    {
-                        self.messageList[i].message = msg.message;
-                        userExist = 1;
-                        break;
-                    }
-                }*/
                 if(userExist == 0)
                 {
                     // 刷新最近消息列表
