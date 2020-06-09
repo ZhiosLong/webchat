@@ -154,7 +154,7 @@
                         <div class="msg_body">
                             <ul id="message" style="padding-left: 0px;">
                                 <div v-for="(chat_content,index) in chat_list" v-bind:key="index">
-                                    <li style="height:50px; width:100%;">
+                                    <li style="height:50px;width:100%;" v-if="chat_content.message.indexOf('data:image/jpeg;base64,') == -1">
                                         <div v-bind:class="userName===chat_content.source?'send':'receive'">
                                             <div class="the_head" v-show="chat_content.source===userName">
                                                 <img :src=myHead style="width:36px; height:36px;"/>
@@ -167,11 +167,26 @@
                                                 </div>
                                             </div>
                                             <div class="msg">
-                                                <div class="text" v-if="chat_content.message.indexOf('data:image/jpeg;base64,') == -1" v-html="chat_content.message"></div>
-                                                <img v-if="chat_content.message.indexOf('data:image/jpeg;base64,') != -1" style="width:100px;" :src="chat_content.message">
+                                                <div class="text" v-html="chat_content.message"></div>
                                             </div>
                                         </div>
-                                        <br>
+                                    </li>
+                                    <li style="height:100px;width:100%;" v-if="chat_content.message.indexOf('data:image/jpeg;base64,') != -1">
+                                        <div v-bind:class="userName===chat_content.source?'send':'receive'">
+                                            <div class="the_head" v-show="chat_content.source===userName">
+                                                <img :src=myHead style="width:36px; height:36px;"/>
+                                            </div>
+                                            <div class="the_head" v-show="chat_content.source===chat_title">
+                                                <div v-for="(friend,index) in friendList" v-bind:key="index">
+                                                    <li v-if="friend.friendName==chat_title">
+                                                        <img :src=friend.friendHead style="width:36px; height:36px;"/>
+                                                    </li>
+                                                </div>
+                                            </div>
+                                            <div class="msg">
+                                                <img v-if="chat_content.message.indexOf('data:image/jpeg;base64,') != -1" style="height:90px;" :src="chat_content.message">
+                                            </div>
+                                        </div>
                                     </li>
                                 </div>
                             </ul>
@@ -506,19 +521,45 @@ export default {
         socket.on(this.userName, function(msg){
             //收到的信息类型为：消息
             if(msg.type == "message"){
-                if(msg.source == self.chat_title)
-                    self.chat_list.push(msg);
+                /*if(msg.source == self.chat_title)
+                    self.chat_list.push(msg);*/
                 let userExist = 0;
-                /*for(let i = 0;i < self.messageList.length;i++)
+                let isFront = 0;
+                let chatIndex = 0;
+                let msgIndex = 0;
+                if(msg.source==self.chat_title)
                 {
-                    let tempName = (self.messageList[i].user1 == self.userName ? self.messageList[i].user2 : self.messageList[i].user1);
-                    if(msg.source == tempName)
-                    {
-                        self.messageList[i].message = msg.message;
-                        userExist = 1;
-                        break;
+                    isFront = 3;
+                }
+                else
+                {
+                    for(let i = 0;i < self.messageList.length;i++)
+                    { 
+                        let tempName = (self.messageList[i].user1 == self.userName ? self.messageList[i].user2 : self.messageList[i].user1);
+                        if(tempName==self.chat_title)
+                        {
+                            chatIndex = i;
+                            isFront += 1;
+                        }
+                        if(msg.source==tempName)
+                        {
+                            msgIndex = i;
+                            isFront += 1;
+                        }
+                        if(isFront==2)
+                        {
+                            break;
+                        }
                     }
-                }*/
+                }
+                if(chatIndex<msgIndex)
+                {
+                    isFront = 1;
+                }
+                if(chatIndex>msgIndex)
+                {
+                    isFront = 0;
+                }
                 if(userExist == 0)
                 {
                     // 刷新最近消息列表
@@ -580,6 +621,20 @@ export default {
                     }).finally(function() {
                         console.log('请求最近消息列表成功');
                     });
+                }
+                // 发来消息的好友在选中好友的下面
+                if(isFront==1)
+                {
+                    let newIndex = self.message_show + 1;
+                    self.changeMessage1(newIndex);
+                    isFront = 0;
+                }
+                // 发来消息的好友与选中好友一样
+                if(isFront==3)
+                {
+                    self.changeMessage1(0);
+                    isFront = 0;
+                    console.log("same");
                 }
             }
             else if(msg.type == "request")  //收到的信息类型为：好友请求
@@ -698,7 +753,7 @@ export default {
                     if(this.chat_title != '')
                     {
                         // 请求列表选定的人的聊天记录
-                        axios.post(
+                        /*axios.post(
                             'https://afwt8c.toutiao15.com/get_chat_record',
                             {
                                 userName:this.userName,
@@ -726,7 +781,18 @@ export default {
                             console.log(error.result);
                         }).finally(function() {
                             console.log("获取聊天记录成功！");
-                        });
+                        });*/
+                        let nIndex = 0;
+                        for(let i = 0;i < self.messageList.length;i++)
+                        { 
+                            let tempName = (self.messageList[i].user1 == self.userName ? self.messageList[i].user2 : self.messageList[i].user1);
+                            if(tempName==self.chat_title)
+                            {
+                                nIndex = i;
+                                break;
+                            }
+                        }
+                        this.$options.methods.changeMessage1(nIndex);
                     }
                 }).catch(function(error) {
                     // 处理异常结果
@@ -809,6 +875,43 @@ export default {
                     color: '#15a4fa'
                 })
             }*/
+        },
+        changeMessage1(index){
+            this.message_show = index;
+            this.more_chat = 1;
+            this.chat_num = 1;
+            this.no_chat = 0;
+            //this.chat_title=(this.messageList[index].user1 == this.userName?this.messageList[index].user2:this.messageList[index].user1);
+            console.log("changeMessage",this.chat_title);
+            //默认获取最近的5条聊天记录
+            axios.post(
+                'https://afwt8c.toutiao15.com/get_chat_record',
+                {
+                    userName:this.userName,
+                    friendName:this.chat_title,
+                    num: 5
+                }
+            ).then((res)=>{
+                //处理正常结果
+                const data = res.data;
+                this.chat_list = [];
+                for(var i = data.result.length - 1;i >= 0;i--)
+                {
+                    data.result[i].message = this.obj.replaceFace(data.result[i].message);
+                    if(data.result[i].sender == 1){
+                        this.chat_list.push({source: data.result[i].user1, des:data.result[i].user2, message:data.result[i].message});
+                    }
+                    else{
+                        this.chat_list.push({source: data.result[i].user2, des:data.result[i].user1, message:data.result[i].message});
+                    }
+                };
+            }).catch(function(error) {
+                // 处理异常结果
+                console.log(JSON.stringify(error));
+                console.log(error.result);
+            }).finally(function() {
+                console.log("获取聊天记录成功！")
+            });  
         },
         changeMessage(index){
             //this.message_show=index;
