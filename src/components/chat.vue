@@ -67,7 +67,8 @@
                                 </div>
                                 <div class="user_info">
                                     <div class="user_name">{{ userName==message.user1?message.user2:message.user1 }}</div>
-                                    <div class="user_msg" v-html="message.message"></div>
+                                    <div class="user_msg" v-if="message.message.indexOf('data:image/jpeg;base64,') == -1" v-html="message.message"></div>
+                                    <div class="user_msg" v-if="message.message.indexOf('data:image/jpeg;base64,') != -1">[图片]</div>
                                 </div>
                             </div>
                             <div class="other">
@@ -97,6 +98,18 @@
                                 <div class="user_info">
                                     <div class="user_name">{{friend.friendNickname}}</div>
                                     <div class="user_msg"></div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <!--词云列表-->
+                    <ul class="online_list" v-show="icon_show==2">
+                        <li style="margin-left: -40px;" @click="changeImg(index)" v-for="(img,index) in imgList" v-bind:key="index" :class="index==img_show?'clicked':'unclicked'">
+                            <div class="info">
+                                <div class="user_head">
+                                    <p v-show="index==0">⚪</p>
+                                    <img :src=img style="width:50px; height:50px; margin-top:-5px;" v-show="index>0"/>
                                 </div>
                             </div>
                         </li>
@@ -142,7 +155,10 @@
 
 
             <!--聊天界面-->
-            <div class="panel_right" v-show="icon_show==0">
+            <div class="panel_right" v-show="icon_show==0 && message_show==-1">
+                <img :src="'../../static/img/'+'friendListBackground.png'" style="width:100%"/>
+            </div>
+            <div class="panel_right" v-show="icon_show==0 && message_show>=0">
                 <div class="chatTitle_bar">
                     <div class="title">{{chat_title}}</div>
                 </div>
@@ -244,9 +260,9 @@
 
             <!--词云-->
             <div class="panel_right" v-show="icon_show==2">
-                <h1 class="newfriend_titile">新的朋友</h1>
-                <hr/>
-                <div id="wordcloudtest" style="width:100%; height:100%;" />
+                <h1 class="newfriend_titile">词云</h1>
+                <br/>
+                <div id="wordcloudtest" style="height: 550px; width: 550px; margin: 0 auto;" />
             </div>
 
             <!--显示搜索到的用户的个人资料-->
@@ -339,7 +355,7 @@ export default {
         // 设置框
         configbox_show: 0,
         icon_show: 0,
-        message_show: 0,
+        message_show: -1,
         chat_title:'',
         friend_show: -1,
         friend_info:'',
@@ -351,6 +367,10 @@ export default {
         obj:'',
         //存储好友请求
         request_list:[],
+        // 词云形状
+        imageShape:'../../static/img/twitter.png',
+        imgList: ['circle','../../static/img/twitter.png'],
+        img_show: -1,
         }
     },
     created:function(){
@@ -795,17 +815,6 @@ export default {
               this.$nextTick(() => {
                 this.renderCloud();
               });
-//                 var wct = document.getElementById('wordcloudtest');
-//                 console.log(wct);
-//                 var wc = new Js2WordCloud(wct);
-//                 console.log(wc);
-//                 wc.setOption({
-//                     tooltip: {
-//                         show: true
-//                     },
-//                     list: [['谈笑风生', 80], ['谈笑风生', 80], ['谈笑风生', 70], ['谈笑风生', 70], ['谈笑风生', 60], ['谈笑风生', 60]],
-//                     color: '#15a4fa'
-//                 })
             }
         },
         changeMessage(index){
@@ -1363,6 +1372,42 @@ export default {
         },
         // 词云
         renderCloud() {
+            var words = []
+            for (var i = 0; i < 100; i++) {
+                words.push(['哈哈', 10])
+            }
+            for (var i = 0; i < 50; i++) {
+                words.push(['TM', 10])
+            }
+            for (var i = 0; i < 50; i++) {
+                words.push(['睡觉', 10])
+            }
+            var option = {
+                fontSizeFactor: 0.1,                                    // 当词云值相差太大，可设置此值进字体行大小微调，默认0.1
+                maxFontSize: 60,                                        // 最大fontSize，用来控制weightFactor，默认60
+                minFontSize: 12,                                        // 最小fontSize，用来控制weightFactor，默认12
+                tooltip: {
+                    show: true,
+                    formatter: function(item) {
+                        return item[0] + ': 跑得比较快' + item[1] + 'km/h<br>' + '词云图'
+                    }
+                },
+                list: words,
+                color: '#15a4fa',
+                imageShape: this.imageShape,
+                ellipticity: 1
+            }
+            var wc = new Js2WordCloud(document.getElementById('wordcloudtest'))
+            wc.showLoading({
+                backgroundColor: '#fff',
+                text: '正在加载...',
+                effect: 'spin'
+            })
+            setTimeout(function() {
+                wc.hideLoading()
+                wc.setOption(option)
+            }, 1000)
+            /*
             var option = {
                 tooltip: {
                     show: true,
@@ -1370,12 +1415,12 @@ export default {
                         return item[0] + ': 价值¥' + item[1] + '<br>' + '词云图'
                     }
                 },
-                list: [['谈笑风生', 500000], ['谈笑风生', 50], ['谈笑风生', 40], ['谈笑风生', 40], ['谈笑风生', 30], ['谈笑风生', 30], ['谈笑风生', 20], ['谈笑风生', 20], ['谈笑风生', 1], ['谈笑风生', 1], ['谈笑风生', 500000], ['谈笑风生', 50], ['谈笑风生', 40], ['谈笑风生', 40], ['谈笑风生', 30], ['谈笑风生', 30], ['谈笑风生', 20], ['谈笑风生', 20], ['谈笑风生', 1], ['谈笑风生', 1], ['谈笑风生', 500000], ['谈笑风生', 50], ['谈笑风生', 40], ['谈笑风生', 40], ['谈笑风生', 30], ['谈笑风生', 30], ['谈笑风生', 20], ['谈笑风生', 20], ['谈笑风生', 1], ['谈笑风生', 1], ['谈笑风生', 500000], ['谈笑风生', 50], ['谈笑风生', 40], ['谈笑风生', 40], ['谈笑风生', 30], ['谈笑风生', 30], ['谈笑风生', 20], ['谈笑风生', 20], ['谈笑风生', 1], ['谈笑风生', 1], ['谈笑风生', 500000], ['谈笑风生', 50], ['谈笑风生', 40], ['谈笑风生', 40], ['谈笑风生', 30], ['谈笑风生', 30], ['谈笑风生', 20], ['谈笑风生', 20], ['谈笑风生', 1], ['谈笑风生', 1], ['谈笑风生', 500000], ['谈笑风生', 50], ['谈笑风生', 40], ['谈笑风生', 40], ['谈笑风生', 30], ['谈笑风生', 30], ['谈笑风生', 20], ['谈笑风生', 20], ['谈笑风生', 1], ['谈笑风生', 1], ['谈笑风生', 500000], ['谈笑风生', 50], ['谈笑风生', 40], ['谈笑风生', 40], ['谈笑风生', 30], ['谈笑风生', 30], ['谈笑风生', 20], ['谈笑风生', 20], ['谈笑风生', 1], ['谈笑风生', 1], ['谈笑风生', 500000], ['谈笑风生', 50], ['谈笑风生', 40], ['谈笑风生', 40], ['谈笑风生', 30], ['谈笑风生', 30], ['谈笑风生', 20], ['谈笑风生', 20], ['谈笑风生', 1], ['谈笑风生', 1], ['谈笑风生', 500000], ['谈笑风生', 50], ['谈笑风生', 40], ['谈笑风生', 40], ['谈笑风生', 30], ['谈笑风生', 30], ['谈笑风生', 20], ['谈笑风生', 20], ['谈笑风生', 1], ['谈笑风生', 1], ['谈笑风生', 500000], ['谈笑风生', 50], ['谈笑风生', 40], ['谈笑风生', 40], ['谈笑风生', 30], ['谈笑风生', 30], ['谈笑风生', 20], ['谈笑风生', 20], ['谈笑风生', 1], ['谈笑风生', 1], ['谈笑风生', 500000], ['谈笑风生', 50], ['谈笑风生', 40], ['谈笑风生', 40], ['谈笑风生', 30], ['谈笑风生', 30], ['谈笑风生', 20], ['谈笑风生', 20], ['谈笑风生', 1], ['谈笑风生', 1], ['谈笑风生', 500000], ['谈笑风生', 50], ['谈笑风生', 40], ['谈笑风生', 40], ['谈笑风生', 30], ['谈笑风生', 30], ['谈笑风生', 20], ['谈笑风生', 20], ['谈笑风生', 1], ['谈笑风生', 1]],
-                // list:[["玻璃瓶",941],["塑料瓶",15],["易拉罐",3]],
+                list:[["玻璃瓶",10],["塑料瓶",10],["易拉罐",10]],
                 color: '#15a4fa',
-                shape: 'circle',
+                shape: '../../static/img/twitter.png',
                 ellipticity: 1
             }
+
             var wc = new Js2WordCloud(document.getElementById('wordcloudtest'))
             wc.showLoading({
                 backgroundColor: '#fff',
@@ -1385,8 +1430,8 @@ export default {
             setTimeout(function() {
                 wc.hideLoading()
                 wc.setOption(option)
-            }, 2000)
-
+            }, 2000)*/
+            /*
             var wc = new Js2WordCloud(document.getElementById('wordcloudtest'));
             //let list = words
             // let option = {
@@ -1404,8 +1449,23 @@ export default {
             wc.setOption(option);
             window.onresize = function () {
                 wc.setOption(option)
-            }
-            console.log('finish');
+            }*/
+            console.log('加载词云成功');
+            /*
+            // 载入模块
+            var Segment = require('segment');
+            // 创建实例
+            var segment = new Segment();
+            // 使用默认的识别模块及字典，载入字典文件需要1秒，仅初始化时执行一次即可
+            segment.useDefault();
+
+            // 开始分词
+            console.log(segment.doSegment('这是一个基于Node.js的中文分词模块。'));*/
+        },
+        // 修改词云形状
+        changeImg(index){
+            this.imageShape = this.imgList[index];
+            this.renderCloud();
         }
     }
 }
