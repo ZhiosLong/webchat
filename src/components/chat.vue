@@ -481,7 +481,7 @@ export default {
                         }
                     };
                     const count = data.count;
-                    console.log(count);
+                    console.log("状态更新：" + count);
                     if(count != 0)
                     {
                         var msg = {source:self.userName, des:self.chat_title, message : '', type : "state"};
@@ -591,7 +591,7 @@ export default {
                                         }
                                     };
                                     const count = data.count;
-                                    console.log(count);
+                                    console.log("状态更新：" + count);
                                     if(count != 0)
                                     {
                                         var msg = {source:self.userName, des:self.chat_title, message : '', type : "state"};
@@ -795,7 +795,7 @@ export default {
                                 }
                             };
                             const count = data.count;
-                            console.log(count);
+                            console.log("状态更新：" + count);
                             if(count != 0)
                             {
                                 var msg = {source:this.userName, des:this.chat_title, message : '', type : "state"};
@@ -915,7 +915,7 @@ export default {
                         }
                     };
                     const count = data.count;
-                    console.log(count);
+                    console.log("状态更新：" + count);
                     if(count != 0)
                     {
                         var msg = {source:this.userName, des:this.chat_title, message : '', type : "state"};
