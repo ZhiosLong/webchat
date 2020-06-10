@@ -121,7 +121,7 @@
                                 </div>
                             </div>
                         </li>
-                        <button @click="spiltword('我想要吃饭睡觉')">test</button>
+                        <button @click="spiltword('我想要吃饭睡觉!我不想再学了，好难顶啊。')">test</button>
                     </ul>
 
                     <ul class="online_list" v-show="icon_show==3">
@@ -1614,7 +1614,7 @@ export default {
                 // 加入到词云词列表中
                 console.log(tmp);
                 for (var i = 0; i < 50; i++) {
-                    this.wordList.push([tmp, 10]);
+                    this.wordList.push([tmp, 70]);
                 }
                 this.spiltword(text);
                 return;
@@ -1644,10 +1644,11 @@ export default {
             text=text.replace(tmp,"");
             if(tmp.replace(/\s/g,'')!=""){
                 // 加入到词云词列表中
-                console.log(tmp);
-                if(tmp == '，' | '。' | ',' | '.' | '！' | '？' | '!' | '?' ) console.log('已省略标点');
+                if(tmp == '，'||tmp== '。' ||tmp== ',' ||tmp== '.' ||tmp== '！' ||tmp== '？' ||tmp== '!' ||tmp== '?' ||tmp== '+' ||tmp== '-' ||tmp== '*' ||tmp== '/' ||tmp== '~' ||tmp== '、' ||tmp== '；') console.log('已省略标点');
                 else{
-                    for (var i = 0; i < 50; i++) {
+                    console.log(tmp);
+                    for (var i = 0; i < 100; i++) {
+                        //this.wordList.push([tmp, Math.ceil(Math.random()*50)]);
                         this.wordList.push([tmp, 10]);
                     }
                 }
