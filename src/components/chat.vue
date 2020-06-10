@@ -888,9 +888,6 @@ export default {
         },
         changeMessage1(index){
             this.message_show = index;
-            this.more_chat = 1;
-            this.chat_num = 1;
-            this.no_chat = 0;
         },
         changeMessage(index){
             if(this.message_show != index){

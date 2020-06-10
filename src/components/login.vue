@@ -10,7 +10,7 @@
           <el-input v-model="userName" placeholder="用户名"></el-input>
           <div style="height: 30px;"></div>
           <el-input v-model="password" placeholder="密码" show-password></el-input>
-          <div style="height: 50px;"></div>
+          <div style="height: 50px;"><span class="login_tips">{{login_error}}</span></div>
           <el-button type="success" icon="el-icon-check"  @click="login" circle></el-button>
           <div style="height: 140px;"></div>
         </el-tab-pane>
@@ -24,7 +24,7 @@
           <el-input v-model="password2" placeholder="密码" show-password></el-input>
           <div style="height: 30px;"></div>
           <el-input v-model="nickname" placeholder="昵称"></el-input>
-          <div style="height: 30px;"></div>
+          <div style="height: 30px;"><span class="register_tips">{{register_error}}</span></div>
           <el-button type="success" icon="el-icon-check"  @click="register" circle></el-button>
           <div style="height: 140px;"></div>
         </el-tab-pane>
@@ -47,24 +47,13 @@ export default {
       userName2:'',
       password2:'',
       login_state:-1,   // 记录登录的请求状态
+      login_error:'',
+      register_error:'',
     }
   },
 	mounted: function(){
 	},
   methods: {
-  	change_head(lr){
-  		if(lr==1){
-  			this.current_head++;
-				if(this.current_head>=this.headimgArr.length){
-					this.current_head=0;
-				}
-  		}else{
-  			if(this.current_head<=0){
-					this.current_head=this.headimgArr.length;
-				}
-  			this.current_head--;
-  		}
-  	},
   	async login(){
       // 调用 LarkCloud 函数
       await axios.post(
@@ -78,25 +67,21 @@ export default {
           this.login_state = data.state;             
           console.log("处理正常结果！");
           if(data.state!=0){
-            alert(data.info)
+            //alert(data.info)
+            this.login_error = data.info;
+            var _this = this;
+            setTimeout(function(){
+              _this.login_error = '';
+            }, 1500);
+            return;
           }
           else{
             console.log("登录成功！");
             var userInfo = {'userName': this.userName};
             var session = window.sessionStorage;      // 使用一个session对象保存登录状态
             session.setItem('user', this.userName);   // 记录登录的用户
-
-        //     var face = new Face({
-        //     el:document.querySelector('.face_icon'),
-        //     callBack:function (face) {
-        //         self.send_text+="〖"+face.title+"〗";
-        //         document.querySelector('.face-warp').style.display='none';
-        //     }
-        // });
-        //     session.setItem('Face', face);
-            
-            this.$router.push({name: 'chat', params: userInfo}); 
-          }           
+            this.$router.push({name: 'chat', params: userInfo});
+          }
       }).catch(function(error) {
           // 处理异常结果
           console.log("处理异常结果！");
@@ -119,7 +104,12 @@ export default {
       ).then((res)=> {
           // 处理正常结果
           const data = res.data;
-          alert(data.info);
+          this.register_error = data.info;
+          var _this = this;
+          setTimeout(function(){
+            _this.register_error = '';
+          }, 1500);
+          return;
           console.log("data:", data);
       }).catch(function(error) {
           // 处理异常结果
@@ -158,29 +148,16 @@ export default {
 		margin-left: 26px;
 		color: #4a4a4a;
 	}
-	.choose_head {
-		width: 100%;
-		height: 100px;
-		position: relative;
-	}
-	.choose_head .headimg {
-		width: 100px;
-		height: 100px;
-		margin: 0 auto;
-		background: #999;
-	}
-	.choose_head .to {
-		position: absolute;
-		top: 36px;
-		font-size: 32px;
-		font-weight: bold;
-		color: #1aad19;
-		cursor: pointer;
-	}
-	.choose_head .to_left {
-		left: 30px;
-	}
-	.choose_head .to_right {
-		right: 30px;
-	}
+	.login_tips{
+    float: left;
+    margin-top: 10px;
+    font-size: 12px;
+    color: #999;
+  }
+  .register_tips{
+    float: left;
+    margin-top: 5px;
+    font-size: 12px;
+    color: #999;
+  }
 </style>
