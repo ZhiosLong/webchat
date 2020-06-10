@@ -83,8 +83,18 @@ export default {
           else{
             console.log("登录成功！");
             var userInfo = {'userName': this.userName};
-            //var session = window.sessionStorage;      // 使用一个session对象保存登录状态
-            //session.setItem('user', this.userName);   // 记录登录的用户
+            var session = window.sessionStorage;      // 使用一个session对象保存登录状态
+            session.setItem('user', this.userName);   // 记录登录的用户
+
+        //     var face = new Face({
+        //     el:document.querySelector('.face_icon'),
+        //     callBack:function (face) {
+        //         self.send_text+="〖"+face.title+"〗";
+        //         document.querySelector('.face-warp').style.display='none';
+        //     }
+        // });
+        //     session.setItem('Face', face);
+            
             this.$router.push({name: 'chat', params: userInfo}); 
           }           
       }).catch(function(error) {
