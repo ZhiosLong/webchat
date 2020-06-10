@@ -753,7 +753,7 @@ export default {
             var currDay = currDate.getDate();
             if(currDate.getFullYear()!=year || currMonth!=month){
                 var day1 = day<10? "0"+day : day;
-                return year+"/"+month+"/"+day1;
+                return month+"/"+day1;
             }
             if(currDay!=day){
                 if((currDay-day) < 7){
@@ -783,7 +783,7 @@ export default {
                     return weekDay;
                 }
                 else{
-                    return year+"/"+month+"/"+day;
+                    return month+"/"+day;
                 }
             }
             if(currDay==day){
