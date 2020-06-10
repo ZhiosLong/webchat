@@ -1261,6 +1261,13 @@ export default {
                         console.log('获取好友请求成功');
                         //console.log(self.friend_info);
                     });
+                    if(this.chat_title!='')
+                    {
+                        this.$nextTick(() => {
+                            let newIndex = this.message_show + 1;
+                            this.changeMessage1(newIndex);
+                        });
+                    }
                 }
                 // 广播一条好友请求，让收方更新请求列表
                 else{
