@@ -56,7 +56,3 @@
         }
     }
 })(window)
-
-export {
-    face
-}
