@@ -618,7 +618,7 @@ export default {
                     isFront = 0;
                 }
             }
-            else if(msg.type == "request")  //收到的信息类型为：好友请求
+            else if(msg.type == "request" && self.icon_show == 1)  //收到的信息类型为：好友请求
             {
                 // 获取好友请求
                 axios.post(
@@ -638,7 +638,7 @@ export default {
                     console.log('更新好友请求成功');
                 });
             }
-            else if(msg.type == "state")    // 收到的信息类型为：状态更新
+            else if(msg.type == "state" && self.icon_show == 0)    // 收到的信息类型为：状态更新 且处于聊天界面
             {
                 if(msg.source == self.chat_title){
                     // 请求列表选定的人的聊天记录
