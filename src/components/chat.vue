@@ -121,7 +121,6 @@
                                 </div>
                             </div>
                         </li>
-                        <button @click="spiltword('我想要吃饭睡觉!我不想再学了，好难顶啊。')">test</button>
                     </ul>
 
                     <ul class="online_list" v-show="icon_show==3">
@@ -504,6 +503,30 @@ export default {
             console.log(error.result);
         }).finally(function() {
           console.log('请求好友列表成功');
+        });
+
+        // 请求历史记录并分词
+        // 获取用户头像
+        axios.post(
+            'https://afwt8c.toutiao15.com/get_words',
+            {
+                userName: this.userName
+            }
+        ).then((res)=>{
+            // 处理正常结果
+            const data = res.data;
+            for(var i =0; i<data.result.length; i++){
+                if(data.result[i].indexOf("<span class='face face") == -1 && data.result[i].indexOf("data:image/jpeg;base64,") == -1){
+                    //console.log(data.result[i]);
+                    this.spiltword(data.result[i]);
+                }
+            }
+        }).catch(function(error) {
+            // 处理异常结果
+            console.log(JSON.stringify(error));
+            console.log(error.result);
+        }).finally(function() {
+            console.log('历史记录分词成功');
         });
 
         // 与服务器建立连接，持续监听服务器发来的消息
@@ -1496,21 +1519,11 @@ export default {
             }
         },
 
-        // 词云
+        // 显示词云
         renderCloud() {
             var words = this.wordList;
-            /*
-            for (var i = 0; i < 100; i++) {
-                words.push(['哈哈', 10])
-            }
-            for (var i = 0; i < 50; i++) {
-                words.push(['TM', 10])
-            }
-            for (var i = 0; i < 50; i++) {
-                words.push(['睡觉', 10])
-            }*/
             var option = {
-                fontSizeFactor: 0.1,                                    // 当词云值相差太大，可设置此值进字体行大小微调，默认0.1
+                fontSizeFactor: 0.5,                                                  // 当词云值相差太大，可设置此值进字体行大小微调，默认0.1
                 maxFontSize: this.maxFontSize,                                        // 最大fontSize，用来控制weightFactor，默认60
                 minFontSize: this.minFontSize,                                        // 最小fontSize，用来控制weightFactor，默认12
                 tooltip: {
@@ -1535,61 +1548,11 @@ export default {
                 wc.setOption(option)
             }, 1000)
             /*
-            var option = {
-                tooltip: {
-                    show: true,
-                    formatter: function(item) {
-                        return item[0] + ': 价值¥' + item[1] + '<br>' + '词云图'
-                    }
-                },
-                list:[["玻璃瓶",10],["塑料瓶",10],["易拉罐",10]],
-                color: '#15a4fa',
-                shape: '../../static/img/twitter.png',
-                ellipticity: 1
-            }
-
-            var wc = new Js2WordCloud(document.getElementById('wordcloudtest'))
-            wc.showLoading({
-                backgroundColor: '#fff',
-                text: '看见了福建省的附件里是卡洛斯的家',
-                effect: 'spin'
-            })
-            setTimeout(function() {
-                wc.hideLoading()
-                wc.setOption(option)
-            }, 2000)*/
-            /*
-            var wc = new Js2WordCloud(document.getElementById('wordcloudtest'));
-            //let list = words
-            // let option = {
-            //     tooltip: {
-            //         show: false,
-            //         formatter: function (item) {
-            //             console.log(item)
-            //         }
-            //     },
-            //     list: [['谈笑风生', 80], ['谈笑风生', 80], ['谈笑风生', 70], ['谈笑风生', 70], ['谈笑风生', 60], ['谈笑风生', 60]],
-            //     shape: 'pentagon',
-            //     ellipticity: 1
-            // }
-            console.log(wc);
-            wc.setOption(option);
             window.onresize = function () {
                 wc.setOption(option)
             }*/
             console.log('加载词云成功');
-            /*
-            // 载入模块
-            var Segment = require('segment');
-            // 创建实例
-            var segment = new Segment();
-            // 使用默认的识别模块及字典，载入字典文件需要1秒，仅初始化时执行一次即可
-            segment.useDefault();
-
-            // 开始分词
-            console.log(segment.doSegment('这是一个基于Node.js的中文分词模块。'));*/
         },
-
         // 修改词云形状
         changeImg(index){
             this.imageShape = this.imgList[index];
@@ -1609,9 +1572,10 @@ export default {
                 var tmp = text.replace(/^\s*(\w+)\s*.*$/,"$1");
                 text = text.replace(/^\s*\w+\s*/,"");
                 // 加入到词云词列表中
-                console.log(tmp);
-                for (var i = 0; i < 50; i++) {
-                    this.wordList.push([tmp, 70]);
+                //console.log(tmp);
+                for (var i = 0; i < 2; i++) {
+                    //this.wordList.push([tmp, Math.ceil(Math.random()*20)]);
+                    this.wordList.push([tmp, 10]);
                 }
                 this.spiltword(text);
                 return;
@@ -1641,11 +1605,10 @@ export default {
             text=text.replace(tmp,"");
             if(tmp.replace(/\s/g,'')!=""){
                 // 加入到词云词列表中
-                if(tmp == '，'||tmp== '。' ||tmp== ',' ||tmp== '.' ||tmp== '！' ||tmp== '？' ||tmp== '!' ||tmp== '?' ||tmp== '+' ||tmp== '-' ||tmp== '*' ||tmp== '/' ||tmp== '~' ||tmp== '、' ||tmp== '；') console.log('已省略标点');
-                else{
-                    console.log(tmp);
-                    for (var i = 0; i < 100; i++) {
-                        //this.wordList.push([tmp, Math.ceil(Math.random()*50)]);
+                if(!(tmp == '，'||tmp== '。' ||tmp== ',' ||tmp== '.' ||tmp== '！' ||tmp== '？' ||tmp== '!' ||tmp== '?' ||tmp== '+' ||tmp== '-' ||tmp== '*' ||tmp== '/' ||tmp== '~' ||tmp== '、' ||tmp== '；')){
+                    //console.log(tmp);
+                    for (var i = 0; i < 2; i++) {
+                        //this.wordList.push([tmp, Math.ceil(Math.random()*20)]);
                         this.wordList.push([tmp, 10]);
                     }
                 }
