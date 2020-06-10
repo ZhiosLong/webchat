@@ -1,29 +1,35 @@
 <template>
   <div>
-  	<div class="login_box">
+  	<div class="login_box" onmouseout="style.opacity='0.5'" onmouseover="style.opacity='1'">
       <el-tabs type="border-card">
-        <el-tab-pane label="登录">
+        <el-tab-pane label="Log in">
           <div class="top_bar">
-            <div class="name">微信</div>
+            <div class="name">在线聊天应用——登录</div>
           </div>
           <div style="height: 30px;"></div>
-          <el-input v-model="userName" placeholder="用户名"></el-input>
+          <i class="fa fa-user-o fa-2x" aria-hidden="true" style="float:left"></i>
+          <el-input v-model="userName" placeholder="用户名" style="width:250px"></el-input>
           <div style="height: 30px;"></div>
-          <el-input v-model="password" placeholder="密码" show-password></el-input>
+          <i class="fa fa-address-book fa-2x" aria-hidden="true" style="float:left"></i>
+          <el-input v-model="password" placeholder="密码" style="width:250px" show-password></el-input>
           <div style="height: 50px;"><span class="login_tips">{{login_error}}</span></div>
           <el-button type="success" icon="el-icon-check"  @click="login" circle></el-button>
           <div style="height: 140px;"></div>
         </el-tab-pane>
-        <el-tab-pane label="注册">
+        <el-tab-pane label="Sign up">
           <div class="top_bar">
-            <div class="name">微信</div>
+            <div class="name">在线聊天应用——注册</div>
+            <div class=""></div>
           </div>
           <div style="height: 20px;"></div>
-          <el-input v-model="userName2" placeholder="用户名"></el-input>
+          <i class="fa fa-user-o fa-2x" aria-hidden="true" style="float:left"></i>
+          <el-input v-model="userName2" placeholder="用户名" style="width:250px"></el-input>
           <div style="height: 30px;"></div>
-          <el-input v-model="password2" placeholder="密码" show-password></el-input>
+          <i class="fa fa-address-book fa-2x" aria-hidden="true" style="float:left"></i>
+          <el-input v-model="password2" placeholder="密码" style="width:250px" show-password></el-input>
           <div style="height: 30px;"></div>
-          <el-input v-model="nickname" placeholder="昵称"></el-input>
+          <i class="fa fa-quora fa-2x" aria-hidden="true" style="float:left"></i>
+          <el-input v-model="nickname" placeholder="昵称" style="width:250px"></el-input>
           <div style="height: 30px;"><span class="register_tips">{{register_error}}</span></div>
           <el-button type="success" icon="el-icon-check"  @click="register" circle></el-button>
           <div style="height: 140px;"></div>
@@ -52,6 +58,7 @@ export default {
     }
   },
 	mounted: function(){
+    
 	},
   methods: {
   	async login(){
@@ -125,6 +132,7 @@ export default {
 
 <style scoped>
 	.login_box {
+    opacity: 0.5;
 		width: 350px;
 		height: 500px;
 		background: #f5f5f5;

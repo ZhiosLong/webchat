@@ -1,6 +1,6 @@
 <template>
     <div id="chat">
-        <div class="chat_box">
+        <div class="chat_box" onmouseout="style.opacity='0.5'" onmouseover="style.opacity='1'">
             <div class="panel_left">
                 <div class="left_bar">
 
@@ -1626,6 +1626,7 @@ export default {
         list-style: none;
     }
     .chat_box {
+        opacity: 0.5;
         width: 900px;
         height: 640px;
         overflow: hidden;
