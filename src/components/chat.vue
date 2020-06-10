@@ -222,7 +222,8 @@
                 <div :class="['send_box',{'focus':write_flag}]">
                     <div class="top_bar">
                         <div class="face_icon" title="表情"></div>
-                        <input type="file" id="sendImage" lay-verify="required" @change="sendImg()" accept="image"/>
+                        <div class="send_image"><input type="file" id="sendImage" lay-verify="required" @change="sendImg()" accept="image"/>
+                        </div>
                     </div>
                     <textarea class="text_box" v-model="send_text" @focus="write_flag=1" @focusout="write_flag=0"></textarea>
                     <div class="send_btn" @click="sendMessage()">发送</div>
@@ -753,7 +754,7 @@ export default {
             var currDay = currDate.getDate();
             if(currDate.getFullYear()!=year || currMonth!=month){
                 var day1 = day<10? "0"+day : day;
-                return year+"/"+month+"/"+day1;
+                return month+"/"+day1;
             }
             if(currDay!=day){
                 if((currDay-day) < 7){
@@ -783,7 +784,7 @@ export default {
                     return weekDay;
                 }
                 else{
-                    return year+"/"+month+"/"+day;
+                    return month+"/"+day;
                 }
             }
             if(currDay==day){
