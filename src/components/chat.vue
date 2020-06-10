@@ -141,7 +141,7 @@
                         <li style="margin-left: -40px;" @click="jumpMessage_Search(index)" v-for="(linkman,index) in linkmanList" v-bind:key="'linkman' + index">
                             <div class="info">
                                 <div class="user_head">
-                                    <img :src=linkman.headImg style="width:50px;margin-top:-5px;"/>
+                                    <img :src=linkman.headImg style="width:50px; height:50px; margin-top:-5px;"/>
                                 </div>
                                 <div class="user_info">
                                     <div class="user_name">{{linkman.nickname}}</div>
@@ -284,12 +284,15 @@
 
             <!--显示搜索到的用户的个人资料-->
             <div class="panel_right" v-show="icon_show==3">
-                <div style="margin-top:200px;" v-show="not_add==1">
+                <div style="margin-top:150px;" v-show="not_add==1">
                     <img :src=userInfo.headImg style="width:60px;height:60px">
-                    <p><span>昵称：</span>{{userInfo['nickname']}}</p>
-                    <p><span>用户名：</span>{{userInfo['userName']}}</p>
-                    <p>备注：</p>
-                    <textarea v-model="default_note"></textarea>
+                    <div>
+                        <p><span style="font-weight:900">昵称：</span>{{userInfo['nickname']}}</p>
+                        <p><span style="font-weight:900">用户名：</span>{{userInfo['userName']}}</p>
+                    </div>
+                    <p style="font-weight:900">备注：</p>
+                    <textarea v-model="default_note" style="border:0;border-radius:5px;background-color:rgba(241,241,241,.98);width: 300px;height: 70px;padding: 10px;resize: none;font-family:SimHei;font-weight:500;" maxlength="50" title="最大字数限制：50"></textarea>
+                    <br>
                     <br>
                     <el-button type="success" @click="addFriend()">添加好友</el-button>
                 </div>
