@@ -222,7 +222,8 @@
                 <div :class="['send_box',{'focus':write_flag}]">
                     <div class="top_bar">
                         <div class="face_icon" title="表情"></div>
-                        <input type="file" id="sendImage" lay-verify="required" @change="sendImg()" accept="image"/>
+                        <div class="send_image"><input type="file" id="sendImage" lay-verify="required" @change="sendImg()" accept="image"/>
+                        </div>
                     </div>
                     <textarea class="text_box" v-model="send_text" @focus="write_flag=1" @focusout="write_flag=0"></textarea>
                     <div class="send_btn" @click="sendMessage()">发送</div>
