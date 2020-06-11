@@ -73,7 +73,7 @@
                                     <!--<span class="fubiao"></span>-->
                                 </div>
                                 <div class="user_info">
-                                    <div class="user_name">{{ userName==message.user1?message.user2:message.user1 }}</div>
+                                    <div class="user_name">{{ message.friendNickname }}</div>
                                     <div class="user_msg" v-if="message.message.indexOf('data:image/') == -1" v-html="message.message"></div>
                                     <div class="user_msg" v-if="message.message.indexOf('data:image/') != -1">[图片]</div>
                                 </div>
@@ -559,7 +559,7 @@ export default {
             for(var i =0; i<data.result.length; i++){
                 if(data.result[i].indexOf("<span class='face face") == -1 && data.result[i].indexOf("data:image/") == -1){
                     //console.log(data.result[i]);
-                    this.spiltword(data.result[i]);
+                    this.spiltword(this.getFilterWords(data.result[i]));
                 }
             }
         }).catch(function(error) {
@@ -1156,16 +1156,6 @@ export default {
                 this.chat_list.push(msg);
                 this.doFilter();
                 this.send_text = '';
-                for(let i = 0;i < this.messageList.length;i++)
-                {
-                    let tempName = (this.messageList[i].user1 == this.userName ? this.messageList[i].user2 : this.messageList[i].user1);
-                    if(msg.des == tempName)
-                    {
-                        this.messageList[i].message = msg.message;
-                        break;
-                    }
-                    this.doFilter();
-                }
                 axios.post(
                     'https://afwt8c.toutiao15.com/add_chat_record',
                     {
@@ -1723,7 +1713,6 @@ export default {
                     //console.log(this.chat_list[i].message);
                     //var tempmessage = this.chat_list[i].message
                     if(this.chat_list[i].message.indexOf("<span class='face face") == -1 && this.chat_list[i].message.indexOf("data:image/") == -1){
-                        console.log(this.chat_list[i].message);
                         this.chat_list[i].message = this.getFilterWords(this.chat_list[i].message);
                     }
                 }
@@ -1731,7 +1720,6 @@ export default {
             if(this.messageList.length>0){      
                 for(var i=0; i<this.messageList.length; i++){
                     if(this.messageList[i].message.indexOf("<span class='face face") == -1 && this.messageList[i].message.indexOf("data:image/") == -1){
-                        console.log(this.messageList[i].message);
                         this.messageList[i].message = this.getFilterWords(this.messageList[i].message);
                     }
                 }
