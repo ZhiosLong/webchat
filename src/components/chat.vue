@@ -104,20 +104,21 @@
                     </ul>
 
                     <!--词云列表-->
-                    <ul class="online_list" v-show="icon_show==2">
-                        <div style="margin-left: -30%;">
+                    <ul class="online_list" v-show="icon_show==2" style="margin-left: -40px; overflow: hidden" >
+                        <div>
                         <span style="width: 20px;">最大字体: </span>
                         <input type="text" v-model="maxFontSize" placeholder="60" @change="changeWordCloud()"/><br/>
                         <span style="width: 20px;">最小字体: </span>
                         <input type="text" v-model="minFontSize" placeholder="12" @change="changeWordCloud()"/><br/>
+                        <span style="width: 20px;">影响因子: </span>
+                        <input type="text" v-model="fontSizeFactor" placeholder="0.1" @change="changeWordCloud()"/><br/>
                         <span style="width: 20px;">字体颜色: </span>
                         <input type="text" v-model="wordColor" placeholder="blue" @change="changeWordCloud()"/><br/>
                         </div>
-                        <li style="margin-left: -40px;" @click="changeImg(index)" v-for="(img,index) in imgList" v-bind:key="index" :class="index==img_show?'clicked':'unclicked'">
+                        <li style="width: 100px; height:100px; float:left; margin-left: 10px; margin-top: 10px;" @click="changeImg(index)" v-for="(img,index) in imgList" v-bind:key="index" :class="index==img_show?'clicked':'unclicked'">
                             <div class="info">
                                 <div class="user_head">
-                                    <p v-show="index==0">⚪</p>
-                                    <img :src=img style="width:50px; height:50px; margin-top:-5px;" v-show="index>0"/>
+                                    <img :src=img style="width:80px; height:80px; margin-top:-2px; margin-left:-1px;"/>
                                 </div>
                             </div>
                         </li>
@@ -398,10 +399,11 @@ export default {
         request_list:[],
         // 词云形状
         imageShape:'../../static/img/twitter.png',
-        imgList: ['circle','../../static/img/twitter.png','../../static/img/wordcloud1.png','../../static/img/wordcloud2.png','../../static/img/wordcloud4.jpg','../../static/img/wordcloud5.png','../../static/img/wordcloud7.png','../../static/img/wordcloud8.png',],
+        imgList: ['../../static/img/wordcloud0.jpg','../../static/img/twitter.png','../../static/img/wordcloud1.png','../../static/img/wordcloud2.png','../../static/img/wordcloud4.jpg','../../static/img/wordcloud5.png','../../static/img/wordcloud7.png','../../static/img/wordcloud8.png',],
         img_show: -1,
         maxFontSize: 60,
         minFontSize: 12,
+        fontSizeFactor: 0.1,
         wordColor: 'blue',
         //词云内容
         wordList: [],
@@ -1521,9 +1523,9 @@ export default {
         renderCloud() {
             var words = this.wordList;
             var option = {
-                fontSizeFactor: 0.5,                                                  // 当词云值相差太大，可设置此值进字体行大小微调，默认0.1
-                maxFontSize: this.maxFontSize,                                        // 最大fontSize，用来控制weightFactor，默认60
-                minFontSize: this.minFontSize,                                        // 最小fontSize，用来控制weightFactor，默认12
+                fontSizeFactor: this.fontSizeFactor,                       // 当词云值相差太大，可设置此值进字体行大小微调，默认0.1
+                maxFontSize: this.maxFontSize,                             // 最大fontSize，用来控制weightFactor，默认60
+                minFontSize: this.minFontSize,                             // 最小fontSize，用来控制weightFactor，默认12
                 tooltip: {
                     show: true,
                     formatter: function(item) {
