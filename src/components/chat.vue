@@ -222,8 +222,10 @@
                 </div>
                 <div :class="['send_box',{'focus':write_flag}]">
                     <div class="top_bar">
-                        <div class="face_icon" style="float:left" title="表情"></div>
-                        <div class="send_image" style="width:75%;float:left"><input type="file" id="sendImage" lay-verify="required" @change="sendImg()" accept="image"/>
+                        <div class="face_icon" title="表情"></div>
+                        <div class="send_image">
+                            <div id="send_image1"><i class="fa fa-file-image-o fa-2x" aria-hidden="true"></i></div>
+                            <div id="send_image2"><input type="file" id="sendImage" lay-verify="required" @change="sendImg()" accept="image"/></div>                    
                         </div>
                     </div>
                     <textarea class="text_box" v-model="send_text" @focus="write_flag=1" @focusout="write_flag=0"></textarea>
@@ -2051,8 +2053,9 @@ export default {
         position: relative;
     }
     .panel_right .send_box .top_bar .face_icon {
-        width: 18px;
-        height: 18px;
+        float:left;
+        width: 30px;
+        height: 30px;
         background: url(../../static/img/face_icon.png);
         background-size: 100% 100%;
         cursor: pointer;
@@ -2286,4 +2289,37 @@ export default {
         text-align: center;
         line-height: 20px;
     }
+
+    .send_image{
+        float:left;
+        margin-left: 10px;
+    }
+
+    .send_image:hover{
+        color: #1E88C7;
+    }
+
+    #send_image1{
+        z-index: 1;
+        width:30px;
+        height:30px;
+        position: absolute;
+        overflow: hidden;
+    }
+
+    #send_image2{
+        z-index: 2;
+        width:30px;
+        height:30px;
+        position: absolute;
+        overflow: hidden;  
+        opacity: 0;
+    }
+
+    #send_image2 input{
+        font-size: 20px;
+    }
+
+    
+
 </style>
