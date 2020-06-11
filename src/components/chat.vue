@@ -1231,34 +1231,38 @@ export default {
         //搜索好友
         searchUser(index){
             console.log(this.searchName);
-            axios.post(
-                'https://afwt8c.toutiao15.com/search_user',
-                {
-                    userName:this.userName,
-                    searchName:this.searchName
-                }
-            ).then((res)=>{
-                // 处理正常结果
-                const data = res.data;
-                console.log(data.result);
-                this.userList = [];
-                this.linkmanList = [];
-                for(let i = 0;i < data.result.length;i++)
-                {
-                    if(data.result[i]['isFriend'])
-                        this.linkmanList.push(data.result[i]);
-                    else
-                        this.userList.push(data.result[i]);
-                }
-            }).catch(function(error) {
-                // 处理异常结果
-                console.log(JSON.stringify(error));
-                console.log(error.result);
-            }).finally(function() {
-                console.log('查找成功');
-            })
-            this.icon_show=index;
-            this.not_add=0;
+            if(this.searchName != '')
+            {
+                axios.post(
+                    'https://afwt8c.toutiao15.com/search_user',
+                    {
+                        userName:this.userName,
+                        searchName:this.searchName
+                    }
+                ).then((res)=>{
+                    // 处理正常结果
+                    const data = res.data;
+                    console.log(data.result);
+                    this.userList = [];
+                    this.linkmanList = [];
+                    for(let i = 0;i < data.result.length;i++)
+                    {
+                        if(data.result[i]['isFriend'])
+                            this.linkmanList.push(data.result[i]);
+                        else
+                            this.userList.push(data.result[i]);
+                    }
+                }).catch(function(error) {
+                    // 处理异常结果
+                    console.log(JSON.stringify(error));
+                    console.log(error.result);
+                }).finally(function() {
+                    console.log('查找成功');
+                })
+                this.icon_show=index;
+                this.not_add=0;
+                this.searchName = '';
+            }
         },
 
         // 查看用户个人资料
