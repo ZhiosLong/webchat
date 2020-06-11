@@ -49,7 +49,7 @@
                 <div class="online_box">
 
                     <!--搜索框-->
-                    <div class="search_box" v-show="icon_show==0||icon_show==1">
+                    <div class="search_box" v-show="icon_show==0||icon_show==1||icon_show==3">
                         <div class="search_bar">
                             <input type="text" v-model="searchName" placeholder="搜索"/>
                             <div class="add">+</div>
