@@ -2343,6 +2343,7 @@ export default {
     .send_image{
         float:left;
         margin-left: 10px;
+        color:#5E5E5E;
     }
 
     .send_image:hover{
