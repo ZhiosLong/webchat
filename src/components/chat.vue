@@ -113,14 +113,9 @@
                     <!--词云列表-->
                     <ul class="online_list" v-show="icon_show==2" style="margin-left: -40px; overflow: hidden" >
                         <div>
-                        <span style="width: 20px;">最大字体: </span>
-                        <input type="text" v-model="maxFontSize" placeholder="60" @change="changeWordCloud()"/><br/>
-                        <span style="width: 20px;">最小字体: </span>
-                        <input type="text" v-model="minFontSize" placeholder="12" @change="changeWordCloud()"/><br/>
-                        <span style="width: 20px;">影响因子: </span>
-                        <input type="text" v-model="fontSizeFactor" placeholder="0.1" @change="changeWordCloud()"/><br/>
+                        
                         <span style="width: 20px;">字体颜色: </span>
-                        <input type="text" v-model="wordColor" placeholder="blue" @change="changeWordCloud()"/><br/>
+                        <input type="text" v-model="wordColor" placeholder="blue" style="width:120px;" @change="changeWordCloud()"/><br/>
                         </div>
                         <li style="width: 100px; height:100px; float:left; margin-left: 10px; margin-top: 10px;" @click="changeImg(index)" v-for="(img,index) in imgList" v-bind:key="index" :class="index==img_show?'clicked':'unclicked'">
                             <div class="info">
@@ -311,7 +306,13 @@
                         <ul v-for="(friend,index) in friendList" v-bind:key="index">
                             <li v-if="index==friend_show">
                                 <hr class="friendLine"><br>
-                                <p class="hehe"><span>备注：</span>{{friend.friendNickname}}</p>
+                                <p class="hehe">
+                                    <span>备注：</span>
+                                    <span v-show="button_show==0">{{friend.friendNickname}}</span>
+                                    <input type="text"  v-model="tempNickname" placeholder="" v-show="button_show==1">
+                                    <button @click="button_show=1" v-show="button_show==0">编辑</button>
+                                    <button @click="setFriendNickname(index)" v-show="button_show==1">修改</button>
+                                </p >
                                 <p class="hehe"><span>地区：</span>{{friend_info.region}}</p>
                                 <p class="hehe"><span>用户名：</span>{{friend_info.userName}}</p>
                                 <br><hr class="friendLine">
@@ -338,7 +339,7 @@
                         <p><span style="font-weight:900">昵称：</span>{{userInfo['nickname']}}</p>
                         <p><span style="font-weight:900">用户名：</span>{{userInfo['userName']}}</p>
                     </div>
-                    <p style="font-weight:900">备注：</p>
+                    <p style="font-weight:900">验证消息：</p>
                     <textarea v-model="default_note" style="border:0;border-radius:5px;background-color:rgba(241,241,241,.98);width: 300px;height: 70px;padding: 10px;resize: none;font-family:SimHei;font-weight:500;" maxlength="50" title="最大字数限制：50"></textarea>
                     <br>
                     <br>
@@ -447,6 +448,10 @@ export default {
         wordList: [],
         // 过滤信息
         filterwords: '',
+        // 当前备注
+        tempNickname: '',
+        // 显示修改input
+        button_show: 0,
         }
     },
     created:function(){
@@ -1065,6 +1070,32 @@ export default {
                 console.log("获取更多聊天记录成功！")
             });
         },
+
+        //设置好友备注
+        setFriendNickname(index){
+            this.button_show=0;
+            this.friendList[index].friendNickname = this.tempNickname;
+            console.log(index);
+            console.log(this.tempNickname);
+            axios.post(
+                'https://afwt8c.toutiao15.com/set_friend_name',
+                {
+                    userName:this.userName,
+                    friendName:this.friendList[index].friendName,
+                    friendNickname:this.tempNickname
+                }
+            ).then((res)=>{
+                // 处理正常结果
+                const data = res.data;
+                console.log(data.result);
+            }).catch(function(error) {
+                // 处理异常结果
+                console.log(JSON.stringify(error));
+                console.log(error.result);
+            }).finally(function() {
+                console.log('修改备注成功');
+            })
+        },
 
         // 修改头像昵称
         confirm_btn(){
