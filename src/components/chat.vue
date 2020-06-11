@@ -39,9 +39,15 @@
                         <span></span>
                         <span></span>
                     </div>
-                    <div style="text-align: left;" class="more_box" v-show="setbox_show" @click="setbox_show=0">
-  						<div class="logout" @click="logout();alterbox_show=0">退出登录</div>
-                        <div class="setting" @click="configbox_show=1">设置</div>
+                    <div style="text-align: left;" class="more_box"  v-show="setbox_show" @click="setbox_show=0">
+                        
+                        <div id="logout_icon"> <i class="fa fa-sign-out fa-fw" aria-hidden="false" ></i></div>                        
+                        <div class="logout" @click="logout();alterbox_show=0" onmouseover="style.color='red'" onmouseout="style.color='white'">退出登录</div>    
+
+                        <div id="setting_icon"><i class="fa fa-cog fa-fw" aria-hidden="false" ></i></div>                      
+                        <div class="setting" @click="configbox_show=1" onmouseover="style.color='skyblue'" onmouseout="style.color='white'">设置</div>
+
+                        
   					</div>
 
                 </div>
@@ -51,9 +57,10 @@
                     <!--搜索框-->
                     <div class="search_box" v-show="icon_show==0||icon_show==1">
                         <div class="search_bar">
-                            <input type="text" v-model="searchName" placeholder="搜索"/>
-                            <div class="add">+</div>
-                            <div class="search_icon" @click="searchUser(3)"></div>
+                            <input type="text" v-model="searchName" placeholder="搜索"/>                            
+                            <div class="search_icon" @click="searchUser(3)" onmouseover="style.color='royalblue'" onmouseout="style.color='black'">
+                                <i class="fa fa-search" aria-hidden="true"></i>
+                                </div>
                         </div>
                     </div>
 
@@ -124,13 +131,31 @@
                         </li>
                     </ul>
 
+                    <!--搜索结果-->
                     <ul class="online_list" v-show="icon_show==3">
                         <div class="noUser" v-show="userList.length == 0 && linkmanList.length == 0">
-                            <div>提示：没有匹配的结果</div>
+                            <div>
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-user-o fa-stack-1x"></i>
+                                    <i class="fa fa-ban fa-stack-2x text-danger"></i>
+                                </span>
+                            </div>
+                            <div>无结果</div>
                         </div>
                         <div class="noUser" v-show="userList.length != 0">
-                            <p>用户:</p>
-                            <div v-show="userList.length == 0">提示：用户不存在</div>
+                            <div style="margin-bottom:30px">
+                                <i class="fa fa-user-circle fa-2x" aria-hidden="true"></i>
+                                <span>陌生人</span>
+                            </div>                            
+                            <div v-show="userList.length == 0">
+                                <div>
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-user-o fa-stack-1x"></i>
+                                        <i class="fa fa-ban fa-stack-2x text-danger"></i>
+                                    </span>
+                                </div>
+                                <div>用户不存在</div>
+                            </div>
                         </div>
                         <li style="margin-left: -40px;" @click="showUserInfo(index)" v-for="(user,index) in userList" v-bind:key="'user' + index">
                             <div class="info">
@@ -144,8 +169,19 @@
                             </div>
                         </li>
                         <div class="noUser" v-show="linkmanList.length != 0">
-                            <p>联系人:</p>
-                            <div v-show="linkmanList.length == 0">提示：联系人不存在</div>
+                            <div style="margin-bottom:30px">
+                                <i class="fa fa-address-book-o fa-2x" aria-hidden="true"></i>
+                                <span>联系人</span>
+                            </div>                            
+                            <div v-show="linkmanList.length == 0">
+                                <div>
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-address-book-o fa-stack-1x"></i>
+                                        <i class="fa fa-ban fa-stack-2x text-danger"></i>
+                                    </span>
+                                </div>
+                                <div>联系人不存在</div>
+                            </div>
                         </div>
                         <li style="margin-left: -40px;" @click="jumpMessage_Search(index)" v-for="(linkman,index) in linkmanList" v-bind:key="'linkman' + index">
                             <div class="info">
@@ -225,7 +261,7 @@
                         <div class="face_icon" title="表情"></div>
                         <div class="send_image">
                             <div id="send_image1"><i class="fa fa-file-image-o fa-2x" aria-hidden="true"></i></div>
-                            <div id="send_image2"><input type="file" id="sendImage" lay-verify="required" @change="sendImg()" accept="image"/></div>                    
+                            <div id="send_image2"><input type="file" id="sendImage" lay-verify="required" @change="sendImg()" accept="image"/></div>                    
                         </div>
                     </div>
                     <textarea class="text_box" v-model="send_text" @focus="write_flag=1" @focusout="write_flag=0"></textarea>
@@ -289,7 +325,7 @@
 
             <!--词云-->
             <div class="panel_right" v-show="icon_show==2">
-                <h1 class="newfriend_titile">词云</h1>
+                <div id="word_icon" style="margin-top:15px"><i class="fa fa-wordpress fa-3x" aria-hidden="true"></i></div>             
                 <br/>
                 <div id="wordcloudtest" style="height: 550px; width: 550px; margin: 0 auto;" />
             </div>
@@ -1881,18 +1917,7 @@ export default {
     .confirm>button:active{
         background: #3c3c3c;
     }
-    .logout{
-        font-size: 20px;
-        color: #ff0000;
-        cursor: pointer;
-        outline:none;
-    }
-    .setting{
-        font-size: 20px;
-        color: #8c8c8c;
-        cursor: pointer;
-        outline:none;
-    }
+    
     .icon_list {
         width: 35px;
         margin: 0 auto;
@@ -1932,20 +1957,21 @@ export default {
         height: 100%;
     }
     .search_bar input {
-        width: 190px;
+        width: 180px;
         outline: none;
-        font-size: 12px;
+        font-size: 15px;
         padding-left: 2px;
         float: left;
     }
     .search_bar .search_icon {
+        background:#eeeae8;
         width: 25px;
         position: absolute;
         top: 0;
-        right: 36px;
-        background: url(../../static/img/find.png);
-        background-size: 100% 100%;
+        right: 10px;
+        top:4px;
         border: none;
+        cursor: pointer;
     }
     .search_bar .focus {
         background: #f2efee;
@@ -2015,8 +2041,9 @@ export default {
         font-size: 14px;
         float: right;
         color: #111;
-        padding-left: 10px;
+        padding-left: 30px;
         box-sizing: border-box;
+        text-align: left;
     }
     .online_list li .info .user_msg {
         overflow: hidden;
@@ -2025,13 +2052,14 @@ export default {
         font-size: 12px;
         margin-top: 4px;
         color: #999;
+        padding-left: 3px;
     }
     .online_list .noUser{
-        margin-left: -40px;
-        margin: 1px;
+        margin-left: -80px;
+        margin-top: 50px;
     }
     .online_list .noUser p{
-        text-align: left;
+        text-align: middle;
         color: gray;
     }
     .panel_right .msg_box {
@@ -2225,8 +2253,8 @@ export default {
         margin-top: 6px;
     }
     .left_bar .more_box {
-        width: 134px;
-        height: 92px;
+        width: 140px;
+        height: 90px;
         background: #323232;
         position: absolute;
         z-index: 1000;
@@ -2234,19 +2262,49 @@ export default {
         bottom: 14px;
 
     }
-    .left_bar .more_box>div {
-        width: 100%;
-        height: 46px;
 
+    #logout_icon{
+        float:left;
+        height: 45px;
+        width:20px;
+        line-height: 45px;
+        padding-left: 10px;
+        color:red;
+    }
+
+    .logout{
+        float:left;
+        color: white;
+        width:100px;     
+        height: 45px;
         font-size: 14px;
-        line-height: 46px;
-        padding-left: 12px;
+        line-height: 45px;
+        padding-left: 10px;
         box-sizing: border-box;
         cursor: pointer;
     }
-    .left_bar .more_box>div:hover {
-        background: #3c3c3c;
+
+    #setting_icon{
+        float:left;
+        height: 45px;
+        width:20px;
+        padding-left: 10px;
+        line-height: 45px;
+        color:skyblue;
     }
+
+    .setting{
+        float:left;
+        color: white;
+        width:100px;     
+        height: 45px;
+        font-size: 14px;
+        line-height: 45px;
+        padding-left: 10px;
+        box-sizing: border-box;
+        cursor: pointer;
+    }   
+
     .sendEmpty {
         width: 114px;
         height: 34px;
