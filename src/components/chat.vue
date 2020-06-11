@@ -331,7 +331,6 @@
                     <div style="height: 30px;"></div>
                     <div style="text-align: center;">
                         <el-button type="primary" @click="changeInformation">确认修改</el-button>
-                        <!--<el-button type="success" icon="el-icon-check" @click="changeInformation" circle></el-button>-->
                     </div>
                     <br/>
                 </div>
@@ -408,7 +407,8 @@ export default {
         wordColor: 'blue',
         //词云内容
         wordList: [],
-        //词库
+        // 过滤信息
+        filterwords: '',
         }
     },
     created:function(){
@@ -481,6 +481,7 @@ export default {
             for(var i=0; i<self.messageList.length; i++){
                 self.messageList[i].message = self.obj.replaceFace(self.messageList[i].message);
             }
+            this.doFilter();
         }).catch(function(error) {
             // 处理异常结果           
             console.log(JSON.stringify(error));           
@@ -589,6 +590,7 @@ export default {
                         // 处理正常结果
                         const data = res.data;
                         self.messageList = data.result;
+                        this.doFilter();
                         /*if(data.result.length!=0 && self.chat_title == '') {
                             if(self.messageList[0].user1 == self.userName)
                                 self.chat_title=self.messageList[0].user2;
@@ -622,6 +624,7 @@ export default {
                                         else{
                                             self.chat_list.push({source: data.result[i].user2, des:data.result[i].user1, message:data.result[i].message, read:data.result[i].read});
                                         }
+                                        this.doFilter();
                                     };
                                     const count = data.count;
                                     console.log("状态更新：" + count);
@@ -711,6 +714,7 @@ export default {
                                 else{
                                     self.chat_list.push({source: data.result[i].user2, des:data.result[i].user1, message:data.result[i].message, read:data.result[i].read});
                                 }
+                                this.doFilter();
                             };
                         }).catch(function(error) {
                             // 处理异常结果
@@ -810,6 +814,7 @@ export default {
                     // 处理正常结果
                     const data = res.data;
                     this.messageList = data.result;
+                    this.doFilter();
                     /*if(data.result.length!=0 && this.chat_title == '') {
                         if(this.messageList[0].user1 == this.userName)
                             this.chat_title=this.messageList[0].user2;
@@ -841,6 +846,7 @@ export default {
                                 else{
                                     this.chat_list.push({source: data.result[i].user2, des:data.result[i].user1, message:data.result[i].message, read:data.result[i].read});
                                 }
+                                this.doFilter();
                             };
                             const count = data.count;
                             console.log("状态更新：" + count);
@@ -963,6 +969,7 @@ export default {
                         else{
                             this.chat_list.push({source: data.result[i].user2, des:data.result[i].user1, message:data.result[i].message, read:data.result[i].read});
                         }
+                        this.doFilter();
                     };
                     const count = data.count;
                     console.log("状态更新：" + count);
@@ -1010,6 +1017,7 @@ export default {
                     else{
                         this.chat_list.push({source: data.result[i].user2, des:data.result[i].user1, message:data.result[i].message, read:data.result[i].read});
                     }
+                    this.doFilter();
                 };
             }).catch(function(error){
                 // 处理异常结果
@@ -1108,6 +1116,7 @@ export default {
                 var msg = {source:this.userName, des:this.chat_title, message : this.send_text, type : "message"};
                 socket.emit('send message', msg);
                 this.chat_list.push(msg);
+                this.doFilter();
                 this.send_text = '';
                 for(let i = 0;i < this.messageList.length;i++)
                 {
@@ -1117,6 +1126,7 @@ export default {
                         this.messageList[i].message = msg.message;
                         break;
                     }
+                    this.doFilter();
                 }
                 axios.post(
                     'https://afwt8c.toutiao15.com/add_chat_record',
@@ -1147,6 +1157,7 @@ export default {
                     //console.log(data.result);
                     //console.log(data.result.length);
                     this.messageList = data.result;
+                    this.doFilter();
                     this.message_show = 0;
                     // 请求列表选定的人的聊天记录
                     /*axios.post(
@@ -1445,7 +1456,7 @@ export default {
         updataImg(){
             var self = this;
             var file = document.querySelector('#Updateimage').files[0];
-            console.log("base64",file);
+            // console.log("base64",file);
             var reader = new FileReader();
             reader.onload = function () {
                 self.imageUrl = reader.result;
@@ -1620,7 +1631,74 @@ export default {
                 }
             }
             this.spiltword(text);
-        }
+        },
+        wordsfilter(text){
+            var dict = '\r\n十九大修宪\r\n习近平连任\r\n宪法修正案\r\n任期限制\r\n腐败中国\r\n社会主义灭亡\r\n打倒中国\r\n打倒共产党\r\n打倒共产主义\r\n打倒胡锦涛\r\n打倒江泽民\r\n打倒江主席\r\n打倒罗干\r\n打倒中共\r\n打倒朱�F\r\n抵制共产党\r\n抵制共产主义\r\n抵制胡锦涛\r\n抵制江泽民\r\n抵制江主席\r\n抵制李鹏\r\n抵制罗干\r\n抵制温家宝\r\n抵制中共\r\n抵制朱�F基\r\n灭亡中国\r\n亡党亡国\r\n粉碎四人帮\r\n激流中国\r\n特供\r\n特贡\r\n特共\r\nzf大楼\r\n殃视\r\n贪污腐败\r\n强制拆除\r\n形式主义\r\n政治风波\r\n太子党\r\n上海帮\r\n北京帮\r\n清华帮\r\n红色贵族\r\n权贵集团\r\n河蟹社会\r\n喝血社会\r\n九风\r\n9风\r\n十7大\r\n17da\r\n九学\r\n9学\r\n四风\r\n4风\r\n双规\r\n南街村\r\n最淫官员\r\n警匪\r\n官匪\r\n独夫民贼\r\n官商勾结\r\n城管暴力执法\r\n强制捐款\r\n毒豺\r\n一党执政\r\n一党专制\r\n一党专政\r\n专制政权\r\n宪法法院\r\n胡平\r\n苏晓康\r\n贺卫方\r\n谭作人\r\n焦国标\r\n万润南\r\n张志新\r\n辛��\r\n高勤荣\r\n王炳章\r\n高智晟\r\n司马璐\r\n刘晓竹\r\n刘宾雁\r\n魏京生\r\n寻找林昭的灵魂\r\n别梦成灰\r\n谁是新中国\r\n讨伐中宣部\r\n异议人士\r\n民运人士\r\n启蒙派\r\n选国家主席\r\n民一主\r\nmin主\r\n民竹\r\n民珠\r\n民猪\r\nchinesedemocracy\r\n大赦国际\r\n国际特赦\r\nda选\r\n投公\r\n公头\r\n宪政\r\n平反\r\n党章\r\n维权\r\n昝爱宗\r\n宪章\r\n08宪\r\n08xz\r\n抿主\r\n敏主\r\n人拳\r\n人木又\r\n人quan\r\nrenquan\r\n中国人权\r\n中国新民党\r\n群体事件\r\n群体性事件\r\n上中央\r\n去中央\r\n讨说法\r\n请愿\r\n请命\r\n公开信\r\n联名上书\r\n万人大签名\r\n万人骚动\r\n截访\r\n上访\r\nshangfang\r\n信访\r\n组织集体\r\n静坐\r\n静zuo\r\njing坐\r\n示wei\r\n游行\r\nyou行\r\n油行\r\n游xing\r\nyouxing\r\n官逼民反\r\n反party\r\n反共\r\n抗议\r\n亢议\r\ndi制\r\n抵zhi\r\ndizhi\r\nboycott\r\n血书\r\n焚烧中国国旗\r\nbaoluan\r\n流血冲突\r\n出现暴动\r\n发生暴动\r\n引起暴动\r\nbaodong\r\n灭共\r\n杀毙\r\n霸工\r\n罢考\r\n罢餐\r\n霸餐\r\n罢参\r\n罢饭\r\n罢吃\r\n罢食\r\n罢课\r\n罢ke\r\n霸课\r\nba课\r\n罢教\r\n罢学\r\n罢运\r\n网特\r\n网评员\r\n网络评论员\r\n五毛党\r\n五毛们\r\n5毛党\r\n戒严\r\njieyan\r\njie严\r\n戒yan\r\n8的平方事件\r\n知道64\r\n八九年\r\n贰拾年\r\n2o年\r\n20和谐年\r\n贰拾周年\r\n六四\r\n六河蟹四\r\n六百度四\r\n六和谐四\r\n陆四\r\n陆肆\r\n198964\r\n5月35\r\n89年春夏之交\r\n64惨案\r\n64时期\r\n64运动\r\n4事件\r\n四事件\r\n北京风波\r\n学潮\r\n学chao\r\nxuechao\r\n学百度潮\r\n门安天\r\n天按门\r\n坦克压大学生\r\n民主女神\r\n历史的伤口\r\n高自联\r\n北高联\r\n血洗京城\r\n四二六社论\r\n王丹\r\n柴玲\r\n沈彤\r\n封从德\r\n王超华\r\n王维林\r\n吾尔开希\r\n吾尔开西\r\n侯德健\r\n阎明复\r\n方励之\r\n蒋捷连\r\n丁子霖\r\n辛灏年\r\n蒋彦永\r\n严家其\r\n陈一咨\r\n中华局域网\r\n党的喉舌\r\n互联网审查\r\n当局严密封锁\r\n新闻封锁\r\n封锁消息\r\n爱国者同盟\r\n关闭所有论坛\r\n网络封锁\r\n金盾工程\r\ngfw\r\n无界浏览\r\n无界网络\r\n自由门\r\n何清涟\r\n中国的陷阱\r\n汪兆钧\r\n记者无疆界\r\n境外媒体\r\n维基百科\r\n纽约时报\r\nbbc中文网\r\n华盛顿邮报\r\n世界日报\r\n东森新闻网\r\n东森电视\r\n星岛日报\r\nwikipedia\r\nyoutube\r\ngoogleblogger\r\n美国广播公司\r\n英国金融时报\r\n自由亚洲\r\n自由时报\r\n中国时报\r\n反分裂\r\n威胁论\r\n左翼联盟\r\n钓鱼岛\r\n保钓组织\r\n主权\r\n弓单\r\n火乍\r\n木仓\r\n石肖\r\n核蛋\r\n步qiang\r\nbao炸\r\n爆zha\r\nbaozha\r\nzha药\r\nzha弹\r\n炸dan\r\n炸yao\r\nzhadan\r\nzhayao\r\nhmtd\r\n三硝基甲苯\r\n六氟化铀\r\n炸药配方\r\n弹药配方\r\n炸弹配方\r\n皮箱炸弹\r\n火药配方\r\n人体炸弹\r\n人肉炸弹\r\n解放军\r\n兵力部署\r\n军转\r\n军事社\r\n8341部队\r\n第21集团军\r\n七大军区\r\n7大军区\r\n北京军区\r\n沈阳军区\r\n济南军区\r\n成都军区\r\n广州军区\r\n南京军区\r\n兰州军区\r\n颜色革命\r\n规模冲突\r\n塔利班\r\n基地组织\r\n恐怖分子\r\n恐怖份子\r\n三股势力\r\n印尼屠华\r\n印尼事件\r\n蒋公纪念歌\r\n马英九\r\nmayingjiu\r\n李天羽\r\n苏贞昌\r\n林文漪\r\n陈水扁\r\n陈s扁\r\n陈随便\r\n阿扁\r\na扁\r\n告全国同胞书\r\n台百度湾\r\n台完\r\n台wan\r\ntaiwan\r\n台弯\r\n湾台\r\n台湾国\r\n台湾共和国\r\n台军\r\n台独\r\n台毒\r\n台du\r\ntaidu\r\ntwdl\r\n一中一台\r\n打台湾\r\n两岸战争\r\n攻占台湾\r\n支持台湾\r\n进攻台湾\r\n占领台湾\r\n统一台湾\r\n收复台湾\r\n登陆台湾\r\n解放台湾\r\n解放tw\r\n解决台湾\r\n光复民国\r\n台湾独立\r\n台湾问题\r\n台海问题\r\n台海危机\r\n台海统一\r\n台海大战\r\n台海战争\r\n台海局势\r\n入联\r\n入耳关\r\n中华联邦\r\n国民党\r\nx民党\r\n民进党\r\n青天白日\r\n闹独立\r\nduli\r\nfenlie\r\n日本万岁\r\n小泽一郎\r\n劣等民族\r\n汉人\r\n汉维\r\n维汉\r\n维吾\r\n吾尔\r\n热比娅\r\n伊力哈木\r\n疆独\r\n东突厥斯坦解放组织\r\n东突解放组织\r\n蒙古分裂分子\r\n列确\r\n阿旺晋美\r\n藏人\r\n臧人\r\nzang人\r\n藏民\r\n藏m\r\n达赖\r\n赖达\r\ndalai\r\n哒赖\r\ndl喇嘛\r\n丹增嘉措\r\n打砸抢\r\n西独\r\n藏独\r\n葬独\r\n臧独\r\n藏毒\r\n藏du\r\nzangdu\r\n支持zd\r\n藏暴乱\r\n藏青会\r\n雪山狮子旗\r\n拉萨\r\n啦萨\r\n啦沙\r\n啦撒\r\n拉sa\r\nlasa\r\nla萨\r\n西藏\r\n藏西\r\n藏春阁\r\n藏�\r\n藏独\r\n藏独立\r\n藏妇会\r\n藏青会\r\n藏字石\r\nxizang\r\nxi藏\r\nx藏\r\n西z\r\ntibet\r\n希葬\r\n希藏\r\n硒藏\r\n稀藏\r\n西脏\r\n西奘\r\n西葬\r\n西臧\r\n援藏\r\nbjork\r\n王千源\r\n安拉\r\n回教\r\n回族\r\n回回\r\n回民\r\n穆斯林\r\n穆罕穆德\r\n穆罕默德\r\n默罕默德\r\n伊斯兰\r\n圣战组织\r\n清真\r\n清zhen\r\nqingzhen\r\n真主\r\n阿拉伯\r\n高丽棒子\r\n韩国狗\r\n满洲第三帝国\r\n满狗\r\n鞑子\r\n江丑闻\r\n江嫡系\r\n江毒\r\n江独裁\r\n江蛤蟆\r\n江核心\r\n江黑心\r\n江胡内斗\r\n江祸心\r\n江家帮\r\n江绵恒\r\n江派和胡派\r\n江派人马\r\n江泉集团\r\n江人马\r\n江三条腿\r\n江氏集团\r\n江氏家族\r\n江氏政治局\r\n江氏政治委员\r\n江梳头\r\n江太上\r\n江戏子\r\n江系人\r\n江系人马\r\n江宰民\r\n江贼\r\n江贼民\r\n江主席\r\n麻果丸\r\n麻将透\r\n麻醉弹\r\n麻醉狗\r\n麻醉枪\r\n麻醉\r\n麻醉药\r\n麻醉�\r\n台独\r\n台湾版假币\r\n台湾独立\r\n台湾国\r\n台湾应该独立\r\n台湾有权独立\r\n天灭中共\r\n中共帮凶\r\n中共保命\r\n中共裁\r\n中共党文化\r\n中共腐败\r\n中共的血旗\r\n中共的罪恶\r\n中共帝国\r\n中共独裁\r\n中共封锁\r\n中共封网\r\n中共腐败\r\n中共黑\r\n中共黑帮\r\n中共解体\r\n中共近期权力斗争\r\n中共恐惧\r\n中共权力斗争\r\n中共任用\r\n中共退党\r\n中共洗脑\r\n中共邪教\r\n中共邪毒素\r\n中共政治游戏\r\n福音会\r\n中国教徒\r\n统一教\r\n观音法门\r\n清海无上师\r\n盘古\r\n李洪志\r\n志洪李\r\n李宏志\r\n轮功\r\n法轮\r\n轮法功\r\n三去车仑\r\n氵去车仑\r\n发论工\r\n法x功\r\n法o功\r\n法0功\r\n法一轮一功\r\n轮子功\r\n车仑工力\r\n法lun\r\nfa轮\r\n法lg\r\nflg\r\nfl功\r\nfalungong\r\n大法弟子\r\n大纪元\r\ndajiyuan\r\n明慧网\r\n明慧周报\r\n正见网\r\n新唐人\r\n伪火\r\n退党\r\ntuidang\r\n退dang\r\n超越红墙\r\n自fen\r\n真善忍\r\n九评\r\n9评\r\n9ping\r\n九ping\r\njiuping\r\n藏字石\r\n集体自杀\r\n自sha\r\nzi杀\r\nsuicide\r\ntitor\r\n逢8必灾\r\n逢八必灾\r\n逢9必乱\r\n逢九必乱\r\n朱瑟里诺\r\n根达亚文明\r\n诺查丹玛斯\r\n人类灭亡进程表\r\n按照马雅历法\r\n推背图\r\n推bei图\r\n济世灵文\r\n诸世纪\r\n电狗\r\n电话定位器\r\n电话拦截器\r\n电话窃听\r\n电话监\r\n电话交友\r\n电话追杀系统\r\n电击枪\r\n电鸡\r\n电警棒\r\n枪出售\r\n枪的制\r\n枪货到\r\n枪决女犯\r\n枪模\r\n枪手\r\n枪销售\r\n枪械制\r\n枪子弹\r\n售步枪\r\n售纯度\r\n售单管\r\n售弹簧刀\r\n售防身\r\n售狗子\r\n售虎头\r\n售火药\r\n售假币\r\n售健卫\r\n售军用\r\n售猎枪\r\n售氯胺\r\n售麻醉\r\n售枪支\r\n售热武\r\n售三棱\r\n售手枪\r\n售五四\r\n售一元硬\r\n售子弹\r\n售左轮\r\n亚砷（酸）酐\r\n亚砷酸钾\r\n亚砷酸钠\r\n亚硒酸\r\n亚硒酸二钠\r\n亚硒酸镁\r\n亚硒酸钠\r\n亚硒酸氢钠\r\n亚硝酸乙酯\r\n亚硝酰乙氧\r\n氧化二丁基锡\r\n氧化汞\r\n氧化铊\r\n氧化亚铊\r\n氧氯化磷\r\n原装弹\r\n原子弹方法\r\n原子弹清单\r\n安眠酮\r\n代血浆\r\n普萘洛尔\r\n呋塞米\r\n西布曲明\r\ntestosterone\r\n胰岛素样生长因子\r\n促红细胞生成素\r\n地西泮\r\n尼可刹米\r\n甲睾酮\r\nadrenaline\r\nerythropoietin\r\n地奈德\r\n莫达非尼\r\n氯噻嗪\r\n苯巴比妥\r\n促性腺激素\r\n泼尼松\r\n麻黄草\r\n雄烯二醇\r\n地塞米松\r\ntamoxifen\r\nstrychnine\r\nandrost\r\n新型毒品\r\n杜冷丁\r\n兴奋剂\r\nmdma\r\n海洛因\r\n海luo因\r\nheroin\r\ndiamorphine\r\ndiacetylmorphine\r\n鸦片\r\n阿芙蓉\r\n咖啡因\r\ncocain\r\n三唑仑\r\n美沙酮\r\n麻古\r\nk粉\r\n凯他敏\r\nketamine\r\n冰毒\r\n苯丙胺\r\ncannabis\r\n大麻\r\n爱他死\r\n氯胺酮\r\nbenzodiazepines\r\n甲基安非他明\r\n安非他命\r\n吗啡\r\n爱女人\r\n爱液\r\n按摩棒\r\n拔出来\r\n爆草\r\n包二奶\r\n暴干\r\n暴奸\r\n暴乳\r\n爆乳\r\n暴淫\r\n屄\r\n被操\r\n被插\r\n被干\r\n逼奸\r\n仓井空\r\n插暴\r\n操逼\r\n操黑\r\n操烂\r\n肏你\r\n肏死\r\n操死\r\n操我\r\n厕奴\r\n插比\r\n插b\r\n插逼\r\n插进\r\n插你\r\n插我\r\n插阴\r\n潮吹\r\n潮喷\r\n成人dv\r\n成人电影\r\n成人论坛\r\n成人小说\r\n成人电\r\n成人电影\r\n成人卡通\r\n成人聊\r\n成人片\r\n成人视\r\n成人图\r\n成人文\r\n成人小\r\n成人电影\r\n成人论坛\r\n成人色情\r\n成人网站\r\n成人文学\r\n成人小说\r\n艳情小说\r\n成人游戏\r\n吃精\r\n赤裸\r\n抽插\r\n扌由插\r\n抽一插\r\n春药\r\n大波\r\n大力抽送\r\n大乳\r\n荡妇\r\n荡女\r\n盗撮\r\n多人轮\r\n发浪\r\n放尿\r\n肥逼\r\n粉穴\r\n封面女郎\r\n风月大陆\r\n干死你\r\n干穴\r\n肛交\r\n肛门\r\n龟头\r\n裹本\r\n国产av\r\n好嫩\r\n豪乳\r\n黑逼\r\n后庭\r\n后穴\r\n虎骑\r\n花花公子\r\n换妻俱乐部\r\n黄片\r\n几吧\r\n鸡吧\r\n鸡巴\r\n鸡奸\r\n寂寞男\r\n寂寞女\r\n妓女\r\n激情\r\n集体淫\r\n奸情\r\n叫床\r\n脚交\r\n金鳞岂是池中物\r\n金麟岂是池中物\r\n精液\r\n就去日\r\n巨屌\r\n菊花洞\r\n菊门\r\n巨奶\r\n巨乳\r\n菊穴\r\n开苞\r\n口爆\r\n口活\r\n口交\r\n口射\r\n口淫\r\n裤袜\r\n狂操\r\n狂插\r\n浪逼\r\n浪妇\r\n浪叫\r\n浪女\r\n狼友\r\n聊性\r\n流淫\r\n铃木麻\r\n凌辱\r\n漏乳\r\n露b\r\n乱交\r\n乱伦\r\n轮暴\r\n轮操\r\n轮奸\r\n裸陪\r\n买春\r\n美逼\r\n美少妇\r\n美乳\r\n美腿\r\n美穴\r\n美幼\r\n秘唇\r\n迷奸\r\n密穴\r\n蜜穴\r\n蜜液\r\n摸奶\r\n摸胸\r\n母奸\r\n奈美\r\n奶子\r\n男奴\r\n内射\r\n嫩逼\r\n嫩女\r\n嫩穴\r\n捏弄\r\n女优\r\n炮友\r\n砲友\r\n喷精\r\n屁眼\r\n品香堂\r\n前凸后翘\r\n强jian\r\n强暴\r\n强奸处女\r\n情趣用品\r\n情色\r\n拳交\r\n全裸\r\n群交\r\n惹火身材\r\n人妻\r\n人兽\r\n日逼\r\n日烂\r\n肉棒\r\n肉逼\r\n肉唇\r\n肉洞\r\n肉缝\r\n肉棍\r\n肉茎\r\n肉具\r\n揉乳\r\n肉穴\r\n肉欲\r\n乳爆\r\n乳房\r\n乳沟\r\n乳交\r\n乳头\r\n三级片\r\n骚逼\r\n骚比\r\n骚女\r\n骚水\r\n骚穴\r\n色逼\r\n色界\r\n色猫\r\n色盟\r\n色情网站\r\n色区\r\n色色\r\n色诱\r\n色欲\r\n色b\r\n少年阿宾\r\n少修正\r\n射爽\r\n射颜\r\n食精\r\n释欲\r\n兽奸\r\n兽交\r\n手淫\r\n兽欲\r\n熟妇\r\n熟母\r\n熟女\r\n爽片\r\n爽死我了\r\n双臀\r\n死逼\r\n丝袜\r\n丝诱\r\n松岛枫\r\n酥痒\r\n汤加丽\r\n套弄\r\n体奸\r\n体位\r\n舔脚\r\n舔阴\r\n调教\r\n偷欢\r\n偷拍\r\n推油\r\n脱内裤\r\n文做\r\n我就色\r\n无码\r\n舞女\r\n无修正\r\n吸精\r\n夏川纯\r\n相奸\r\n小逼\r\n校鸡\r\n小穴\r\n小xue\r\n写真\r\n性感妖娆\r\n性感诱惑\r\n性虎\r\n性饥渴\r\n性技巧\r\n性交\r\n性奴\r\n性虐\r\n性息\r\n性欲\r\n胸推\r\n穴口\r\n学生妹\r\n穴图\r\n亚情\r\n颜射\r\n阳具\r\n杨思敏\r\n要射了\r\n夜勤病栋\r\n一本道\r\n一夜欢\r\n一夜情\r\n一ye情\r\n阴部\r\n淫虫\r\n阴唇\r\n淫荡\r\n阴道\r\n淫电影\r\n阴阜\r\n淫妇\r\n淫河\r\n阴核\r\n阴户\r\n淫贱\r\n淫叫\r\n淫教师\r\n阴茎\r\n阴精\r\n淫浪\r\n淫媚\r\n淫糜\r\n淫魔\r\n淫母\r\n淫女\r\n淫虐\r\n淫妻\r\n淫情\r\n淫色\r\n淫声浪语\r\n淫兽学园\r\n淫书\r\n淫术炼金士\r\n淫水\r\n淫娃\r\n淫威\r\n淫亵\r\n淫样\r\n淫液\r\n淫照\r\n阴b\r\n应召\r\n幼交\r\n幼男\r\n幼女\r\n欲火\r\n欲女\r\n玉女心经\r\n玉蒲团\r\n玉乳\r\n欲仙欲死\r\n玉穴\r\n援交\r\n原味内衣\r\n援助交际\r\n张筱雨\r\n招鸡\r\n招妓\r\n中年美妇\r\n抓胸\r\n自拍\r\n自慰\r\n作爱\r\n18禁\r\n99bb\r\na4u\r\na4y\r\nadult\r\namateur\r\nanal\r\na片\r\nfuck\r\ngay片\r\ng点\r\ng片\r\nhardcore\r\nh动画\r\nh动漫\r\nincest\r\nporn\r\nsecom\r\nsexinsex\r\nsm女王\r\nxiao77\r\nxing伴侣\r\ntokyohot\r\nyin荡\r\n贱人\r\n装b\r\n大sb\r\n傻逼\r\n傻b\r\n煞逼\r\n煞笔\r\n刹笔\r\n傻比\r\n沙比\r\n欠干\r\n婊子养的\r\n我日你\r\n我操\r\n我草\r\n卧艹\r\n卧槽\r\n爆你菊\r\n艹你\r\ncao你\r\n你他妈\r\n真他妈\r\n别他吗\r\n草你吗\r\n草你丫\r\n操你妈\r\n擦你妈\r\n操你娘\r\n操他妈\r\n日你妈\r\n干你妈\r\n干你娘\r\n娘西皮\r\n狗操\r\n狗草\r\n狗杂种\r\n狗日的\r\n操你祖宗\r\n操你全家\r\n操你大爷\r\n妈逼\r\n你麻痹\r\n麻痹的\r\n妈了个逼\r\n马勒\r\n狗娘养\r\n贱比\r\n贱b\r\n下贱\r\n死全家\r\n全家死光\r\n全家不得好死\r\n全家死绝\r\n白痴\r\n无耻\r\nsb\r\n杀b\r\n你吗b\r\n你妈的\r\n婊子\r\n贱货\r\n人渣\r\n混蛋\r\n媚外\r\n和弦\r\n兼职\r\n限量\r\n铃声\r\n性伴侣\r\n男公关\r\n火辣\r\n精子\r\n射精\r\n诱奸\r\n强奸\r\n做爱\r\n性爱\r\n发生关系\r\n按摩\r\n快感\r\n处男\r\n猛男\r\n少妇\r\n屌\r\n屁股\r\n下体\r\na片\r\n内裤\r\n浑圆\r\n咪咪\r\n发情\r\n刺激\r\n白嫩\r\n粉嫩\r\n兽性\r\n风骚\r\n呻吟\r\nsm\r\n阉割\r\n高潮\r\n裸露\r\n不穿\r\n一丝不挂\r\n脱光\r\n干你\r\n干死\r\n我干\r\n裙中性运动\r\n乱奸\r\n乱伦\r\n乱伦类\r\n乱伦小\r\n伦理大\r\n伦理电影\r\n伦理毛\r\n伦理片\r\n裸聊\r\n裸聊网\r\n裸体写真\r\n裸舞视\r\n裸照\r\n美女裸体\r\n美女写真\r\n美女上门\r\n美艳少妇\r\n妹按摩\r\n妹上门\r\n迷幻药\r\n迷幻藥\r\n迷昏口\r\n迷昏药\r\n迷昏藥\r\n迷魂香\r\n迷魂药\r\n迷魂藥\r\n迷奸粉\r\n迷奸药\r\n迷情粉\r\n迷情水\r\n迷情药\r\n迷药\r\n迷藥\r\n谜奸药\r\n骚妇\r\n骚货\r\n骚浪\r\n骚女\r\n骚嘴\r\n色电影\r\n色妹妹\r\n色情表演\r\n色情电影\r\n色情服务\r\n色情图片\r\n色情小说\r\n色情影片\r\n色情表演\r\n色情电影\r\n色情服务\r\n色情片\r\n色视频\r\n色小说\r\n性伴侣\r\n性服务\r\n性福情\r\n性感少\r\n性伙伴\r\n性交\r\n性交视频\r\n性交图片\r\n性奴\r\n性奴集中营\r\n性虐\r\n阴唇\r\n阴道\r\n阴蒂\r\n阴户\r\n阴间来电\r\n阴茎\r\n阴茎增大\r\n阴茎助勃\r\n阴毛\r\n陰唇\r\n陰道\r\n陰戶\r\n淫荡\r\n淫荡美女\r\n淫荡视频\r\n淫荡照片\r\n淫乱\r\n淫靡\r\n淫魔\r\n淫魔舞\r\n淫女\r\n淫情女\r\n淫肉\r\n淫騷妹\r\n淫兽\r\n淫兽学\r\n淫水\r\n淫穴\r\nmorphine\r\n摇头丸\r\n迷药\r\n乖乖粉\r\nnarcotic\r\n麻醉药\r\n精神药品\r\n爱女人\r\n爱液\r\n按摩棒\r\n拔出来\r\n爆草\r\n包二奶\r\n暴干\r\n暴奸\r\n暴乳\r\n爆乳\r\n暴淫\r\n屄\r\n被操\r\n被插\r\n被干\r\n逼奸\r\n仓井空\r\n插暴\r\n操逼\r\n操黑\r\n操烂\r\n肏你\r\n肏死\r\n操死\r\n操我\r\n厕奴\r\n插比\r\n插b\r\n插逼\r\n插进\r\n插你\r\n插我\r\n插阴\r\n潮吹\r\n潮喷\r\n成人电影\r\n成人论坛\r\n成人色情\r\n成人网站\r\n成人文学\r\n成人小说\r\n艳情小说\r\n成人游戏\r\n吃精\r\n赤裸\r\n抽插\r\n扌由插\r\n抽一插\r\n春药\r\n大波\r\n大力抽送\r\n大乳\r\n荡妇\r\n荡女\r\n盗撮\r\n多人轮\r\n发浪\r\n放尿\r\n肥逼\r\n粉穴\r\n封面女郎\r\n风月大陆\r\n干死你\r\n干穴\r\n肛交\r\n肛门\r\n龟头\r\n裹本\r\n国产av\r\n好嫩\r\n豪乳\r\n黑逼\r\n后庭\r\n后穴\r\n虎骑\r\n花花公子\r\n换妻俱乐部\r\n黄片\r\n几吧\r\n鸡吧\r\n鸡巴\r\n鸡奸\r\n寂寞男\r\n寂寞女\r\n妓女\r\n激情\r\n集体淫\r\n奸情\r\n叫床\r\n脚交\r\n金鳞岂是池中物\r\n金麟岂是池中物\r\n精液\r\n就去日\r\n巨屌\r\n菊花洞\r\n菊门\r\n巨奶\r\n巨乳\r\n菊穴\r\n开苞\r\n口爆\r\n口活\r\n口交\r\n口射\r\n口淫\r\n裤袜\r\n狂操\r\n狂插\r\n浪逼\r\n浪妇\r\n浪叫\r\n浪女\r\n狼友\r\n聊性\r\n流淫\r\n铃木麻\r\n凌辱\r\n漏乳\r\n露b\r\n乱交\r\n乱伦\r\n轮暴\r\n轮操\r\n轮奸\r\n裸陪\r\n买春\r\n美逼\r\n美少妇\r\n美乳\r\n美腿\r\n美穴\r\n美幼\r\n秘唇\r\n迷奸\r\n密穴\r\n蜜穴\r\n蜜液\r\n摸奶\r\n摸胸\r\n母奸\r\n奈美\r\n奶子\r\n男奴\r\n内射\r\n嫩逼\r\n嫩女\r\n嫩穴\r\n捏弄\r\n女优\r\n炮友\r\n砲友\r\n喷精\r\n屁眼\r\n品香堂\r\n前凸后翘\r\n强jian\r\n强暴\r\n强奸处女\r\n情趣用品\r\n情色\r\n拳交\r\n全裸\r\n群交\r\n惹火身材\r\n人妻\r\n人兽\r\n日逼\r\n日烂\r\n肉棒\r\n肉逼\r\n肉唇\r\n肉洞\r\n肉缝\r\n肉棍\r\n肉茎\r\n肉具\r\n揉乳\r\n肉穴\r\n肉欲\r\n乳爆\r\n乳房\r\n乳沟\r\n乳交\r\n乳头\r\n三级片\r\n骚逼\r\n骚比\r\n骚女\r\n骚水\r\n骚穴\r\n色逼\r\n色界\r\n色猫\r\n色盟\r\n色情网站\r\n色区\r\n色色\r\n色诱\r\n色欲\r\n色b\r\n少年阿宾\r\n少修正\r\n射爽\r\n射颜\r\n食精\r\n释欲\r\n兽奸\r\n兽交\r\n手淫\r\n兽欲\r\n熟妇\r\n熟母\r\n熟女\r\n爽片\r\n爽死我了\r\n双臀\r\n死逼\r\n丝袜\r\n丝诱\r\n松岛枫\r\n酥痒\r\n汤加丽\r\n套弄\r\n体奸\r\n体位\r\n舔脚\r\n舔阴\r\n调教\r\n偷欢\r\n偷拍\r\n推油\r\n脱内裤\r\n文做\r\n我就色\r\n无码\r\n舞女\r\n无修正\r\n吸精\r\n夏川纯\r\n相奸\r\n小逼\r\n校鸡\r\n小穴\r\n小xue\r\n写真\r\n性感妖娆\r\n性感诱惑\r\n性虎\r\n性饥渴\r\n性技巧\r\n性交\r\n性奴\r\n性虐\r\n性息\r\n性欲\r\n胸推\r\n穴口\r\n学生妹\r\n穴图\r\n亚情\r\n颜射\r\n阳具\r\n杨思敏\r\n要射了\r\n夜勤病栋\r\n一本道\r\n一夜欢\r\n一夜情\r\n一ye情\r\n阴部\r\n淫虫\r\n阴唇\r\n淫荡\r\n阴道\r\n淫电影\r\n阴阜\r\n淫妇\r\n淫河\r\n阴核\r\n阴户\r\n淫贱\r\n淫叫\r\n淫教师\r\n阴茎\r\n阴精\r\n淫浪\r\n淫媚\r\n淫糜\r\n淫魔\r\n淫母\r\n淫女\r\n淫虐\r\n淫妻\r\n淫情\r\n淫色\r\n淫声浪语\r\n淫兽学园\r\n淫书\r\n淫术炼金士\r\n淫水\r\n淫娃\r\n淫威\r\n淫亵\r\n淫样\r\n淫液\r\n淫照\r\n阴b\r\n应召\r\n幼交\r\n幼男\r\n幼女\r\n欲火\r\n欲女\r\n玉女心经\r\n玉蒲团\r\n玉乳\r\n欲仙欲死\r\n玉穴\r\n援交\r\n原味内衣\r\n援助交际\r\n张筱雨\r\n招鸡\r\n招妓\r\n中年美妇\r\n抓胸\r\n自拍\r\n自慰\r\n作爱\r\n18禁\r\n99bb\r\na4u\r\na4y\r\nadult\r\namateur\r\nanal\r\na片\r\nfuck\r\ngay片\r\ng点\r\ng片\r\nhardcore\r\nh动画\r\nh动漫\r\nincest\r\nporn\r\nsecom\r\nsexinsex\r\nsm女王\r\nxiao77\r\nxing伴侣\r\ntokyohot\r\nyin荡\r\n干逼\r\n你妈逼\r\n操你妈\r\n草你妈\r\n艹你妈\r\n草泥马\r\n曹尼玛\r\n爱液\r\n按摩棒\r\n拔出来\r\n爆草\r\n包二奶\r\n暴干\r\n暴奸\r\n暴乳\r\n爆乳\r\n暴淫\r\n被操\r\n被插\r\n被干\r\n逼奸\r\n仓井空\r\n插暴\r\n操逼\r\n操黑\r\n操烂\r\n肏你\r\n肏死\r\n操死\r\n操我\r\n厕奴\r\n插比\r\n插b\r\n插逼\r\n插进\r\n插你\r\n插我\r\n插阴\r\n潮吹\r\n潮喷\r\n成人电影\r\n成人论坛\r\n成人色情\r\n成人网站\r\n成人文学\r\n成人小说\r\n艳情小说\r\n成人游戏\r\n吃精\r\n抽插\r\n春药\r\n大波\r\n大力抽送\r\n大乳\r\n荡妇\r\n荡女\r\n盗撮\r\n发浪\r\n放尿\r\n肥逼\r\n粉穴\r\n风月大陆\r\n干死你\r\n干穴\r\n肛交\r\n肛门\r\n龟头\r\n裹本\r\n国产av\r\n好嫩\r\n豪乳\r\n黑逼\r\n后庭\r\n后穴\r\n虎骑\r\n换妻俱乐部\r\n黄片\r\n几吧\r\n鸡吧\r\n鸡巴\r\n鸡奸\r\n妓女\r\n奸情\r\n叫床\r\n脚交\r\n精液\r\n就去日\r\n巨屌\r\n菊花洞\r\n菊门\r\n巨奶\r\n巨乳\r\n菊穴\r\n开苞\r\n口爆\r\n口活\r\n口交\r\n口射\r\n口淫\r\n裤袜\r\n狂操\r\n狂插\r\n浪逼\r\n浪妇\r\n浪叫\r\n浪女\r\n狼友\r\n聊性\r\n凌辱\r\n漏乳\r\n露b\r\n乱交\r\n乱伦\r\n轮暴\r\n轮操\r\n轮奸\r\n裸陪\r\n买春\r\n美逼\r\n美少妇\r\n美乳\r\n美腿\r\n美穴\r\n美幼\r\n秘唇\r\n迷奸\r\n密穴\r\n蜜穴\r\n蜜液\r\n摸奶\r\n摸胸\r\n母奸\r\n奈美\r\n奶子\r\n男奴\r\n内射\r\n嫩逼\r\n嫩女\r\n嫩穴\r\n捏弄\r\n女优\r\n炮友\r\n砲友\r\n喷精\r\n屁眼\r\n前凸后翘\r\n强jian\r\n强暴\r\n强奸处女\r\n情趣用品\r\n情色\r\n拳交\r\n全裸\r\n群交\r\n人妻\r\n人兽\r\n日逼\r\n日烂\r\n肉棒\r\n肉逼\r\n肉唇\r\n肉洞\r\n肉缝\r\n肉棍\r\n肉茎\r\n肉具\r\n揉乳\r\n肉穴\r\n肉欲\r\n乳爆\r\n乳房\r\n乳沟\r\n乳交\r\n乳头\r\n骚逼\r\n骚比\r\n骚女\r\n骚水\r\n骚穴\r\n色逼\r\n色界\r\n色猫\r\n色盟\r\n色情网站\r\n色区\r\n色色\r\n色诱\r\n色欲\r\n色b\r\n少年阿宾\r\n射爽\r\n射颜\r\n食精\r\n释欲\r\n兽奸\r\n兽交\r\n手淫\r\n兽欲\r\n熟妇\r\n熟母\r\n熟女\r\n爽片\r\n双臀\r\n死逼\r\n丝袜\r\n丝诱\r\n松岛枫\r\n酥痒\r\n汤加丽\r\n套弄\r\n体奸\r\n体位\r\n舔脚\r\n舔阴\r\n调教\r\n偷欢\r\n推油\r\n脱内裤\r\n文做\r\n舞女\r\n无修正\r\n吸精\r\n夏川纯\r\n相奸\r\n小逼\r\n校鸡\r\n小穴\r\n小xue\r\n性感妖娆\r\n性感诱惑\r\n性虎\r\n性饥渴\r\n性技巧\r\n性交\r\n性奴\r\n性虐\r\n性息\r\n性欲\r\n胸推\r\n穴口\r\n穴图\r\n亚情\r\n颜射\r\n阳具\r\n杨思敏\r\n要射了\r\n夜勤病栋\r\n一本道\r\n一夜欢\r\n一夜情\r\n一ye情\r\n阴部\r\n淫虫\r\n阴唇\r\n淫荡\r\n阴道\r\n淫电影\r\n阴阜\r\n淫妇\r\n淫河\r\n阴核\r\n阴户\r\n淫贱\r\n淫叫\r\n淫教师\r\n阴茎\r\n阴精\r\n淫浪\r\n淫媚\r\n淫糜\r\n淫魔\r\n淫母\r\n淫女\r\n淫虐\r\n淫妻\r\n淫情\r\n淫色\r\n淫声浪语\r\n淫兽学园\r\n淫书\r\n淫术炼金士\r\n淫水\r\n淫娃\r\n淫威\r\n淫亵\r\n淫样\r\n淫液\r\n淫照\r\n阴b\r\n应召\r\n幼交\r\n欲火\r\n欲女\r\n玉乳\r\n玉穴\r\n援交\r\n原味内衣\r\n援助交际\r\n招鸡\r\n招妓\r\n抓胸\r\n自慰\r\n作爱\r\na片\r\nfuck\r\ngay片\r\ng点\r\n失身粉\r\n淫荡自慰器\r\n出售雷管\r\n出售炸药\r\n出售炸药 电话\r\n制作火药配方\r\n炸药出售 \r\n出售雷管炸药\r\n火药配方\r\n在家里做原子弹\r\n硝酸甘油炸弹制作\r\nTNT 炸弹的制作\r\n硝铵炸药配方\r\n硝酸甘油制作\r\n炸弹配方\r\n简易炸药\r\n火药制作简易炸弹\r\n炸弹制作\r\n硝酸甘油\r\n硝酸甘油炸弹制作方法\r\n手把手教你做炸弹\r\n恐怖分子傻瓜手册\r\n氢弹手工制作方法\r\n起爆器\r\n自制燃烧弹\r\n燃烧弹\r\n弹药制造方法\r\n液体炸药配方\r\n炸药配方与制作\r\n自制炸药配方\r\ntnt炸药成分\r\n炸药的制作\r\ntnt炸药配方\r\n各种炸药配方大全\r\n炸药的成分\r\n燃烧弹的制作方 \r\n黑火药的配方\r\n黑火药的制作\r\n黑火药比例\r\n燃烧弹 制作\r\n黑火药配方比例\r\n黑火药的成分\r\n原子弹配方\r\n原子弹DIY教程\r\nC4炸药\r\n雷管出售\r\n制作硝化甘油\r\nDIY核弹\r\n核弹制作方法\r\n原子弹制作手册\r\n简易原子弹教程\r\n黑火药配方\r\n自制炸药方法\r\n教你怎么用土办法做武器\r\n莫洛托夫鸡尾酒的配方\r\nzz炸弹的制作方法\r\nC4炸药的成分\r\n炸药制造生产工艺\r\n原子弹制造完全手册\r\n「红烧兔子」大餐\r\n汽车炸弹制作\r\n人体炸弹制作流程\r\n炸弹制作从入门\r\n鸡尾酒炸弹制作\r\n集束炸弹制作\r\n硝酸铵的简便制取方法\r\n莫洛托夫燃烧弹\r\n塑胶炸弹\r\n用火药混合塑料\r\n高性能爆炸物质混合\r\n原子弹 制作方法\r\n手教你制作原子弹\r\n轻型巡航导弹的制作\r\n黑索金的制造过程\r\nZha药制造进程\r\n购买自爆材料\r\n可塑炸弹制作方法\r\nC4塑胶炸药\r\n水浴法制TNT\r\n简易核弹头的制造\r\n高爆炸药的基本配方\r\n如何制硝化甘油\r\n燃烧剂的简易制备\r\n简易大威力炸弹\r\n炸弹制作入门\r\n硝酸甘油炸药制作\r\n基本配方是硝酸甘\r\n燃烧剂的简易制作\r\n制作性能优良的燃烧弹\r\n酸甘油炸药\r\n简易导弹制作\r\n核弹头的制造\r\n可塑炸弹制作\r\n炸药硝酸甘油制法\r\n原子弹制作方法\r\n火药的配方\r\n手教你做原子弹\r\n怎么用土办法做武器\r\n手把手教你制作原子弹\r\n燃烧弹的制作方法\r\n怎么自制燃烧弹\r\nTNT炸弹制作\r\n高爆炸药基本配方\r\n爆破和杀伤燃烧弹\r\n炸弹制作从入门到精\r\n写的炸弹制作教程\r\n原子弹制作 方法\r\n教你制作原子弹\r\n下硝化甘油的制作方法\r\nDIY原子弹\r\n原子弹制作\r\n炸药及其制造方法\r\nATOM弹制造\r\n三分钟教你原子弹\r\n火药原理\r\n简易炸弹\r\n简易燃烧弹\r\n土炸药成份\r\n你怎么用土办法做武器\r\n燃烧弹制作\r\n燃烧瓶的制作方法\r\n炸弹制作手册 硫酸\r\n原子弹制作方法DIY\r\n汽油三分之一白糖混合\r\n炸药的制作配方\r\n燃烧弹的制作方\r\n炸药的配方\r\n如何自制燃烧弹\r\n标准炸弹教程\r\n黑火药和硝酸钾农药混合\r\n恐怖分子自己制造炸弹\r\n手柄制作炸弹引爆器\r\n制作炸弹首先要\r\n燃烧瓶制作\r\n出售炸药QQ\r\n出售气枪\r\n出售气枪 QQ\r\n出售气枪 电话\r\n出售手枪\r\n出售手枪 QQ\r\n出售手枪 电话\r\n出售猎枪\r\n出售猎枪 QQ\r\n出售猎枪 电话\r\n出售汽枪\r\n出售步枪\r\n出售狙击枪\r\n出售手狗\r\n出售气狗\r\n出售猎狗\r\n【手枪出售】联系电话\r\n64式手枪出售\r\n92式手枪出售\r\n出售:高仿真枪\r\n出售54式手枪\r\n出售M1911\r\n出售各类猎狗\r\n出售国产军用54手枪\r\n出售火枪 –游戏\r\n出售进口金属枪模\r\n出售仿真枪\r\n出售麻醉枪免收任何定金\r\n出售手枪=货到付款\r\n出售外国枪模\r\n出售袖珍手枪\r\n娥眉气枪出售\r\n防身手枪QQ\r\n防身武器手枪\r\n仿真枪QQ\r\n钢珠枪小口径步枪\r\n高压狗QQ\r\n高压气枪,气枪子弹\r\n高压气枪|电狗专卖\r\n高压气枪|气枪货到付款\r\n高压气枪专卖店\r\n各类军用枪\r\n各类军用枪支\r\n各式气枪出售\r\n工字牌气枪出售专卖\r\n气枪\r\n工字汽狗麻醉枪\r\n供应军用手枪\r\n供应汽枪\r\n购买枪支QQ\r\n国产汽狗专卖|气枪货\r\n集团出售手枪\r\n集团出售手枪气枪\r\n进口气枪,气枪子弹\r\n军用54出售\r\n军用77出售\r\n军用手枪钢珠枪\r\n里有汽枪出售\r\n猎枪出售/枪\r\n猎枪仿真枪QQ\r\n猎枪麻醉枪钢珠枪\r\n猎枪哪里有卖\r\n猎枪手枪买卖\r\n猎枪销售手枪销售气枪\r\n猎枪专卖店\r\n猎枪子弹底火专卖\r\n麻醉枪出售可验货\r\n麻醉枪猎枪军用\r\n买卖54狗\r\n买卖64狗\r\n买卖警察枪支\r\n买卖军狗\r\n买卖军用枪支\r\n卖64手枪\r\n卖92手枪\r\n卖钢珠枪QQ\r\n哪里能买到自制手枪  \r\n哪里有钢珠枪\r\n哪里有连发猎枪买卖\r\n哪里有卖双管猎\r\n哪里有气枪卖\r\n哪里有枪出售\r\n哪里有真枪出售\r\n哪里有真枪卖买\r\n哪能买到真枪\r\n期出售手枪气枪猎\r\n气狗 高压气枪\r\n气狗出售 进口气狗\r\n气枪专卖网\r\n气枪/出售/专卖网\r\n气枪/猎枪/钢珠枪\r\n气枪仿真枪出售\r\n气枪购买|气枪组装\r\n气枪货到付款,汽狗出售\r\n气枪价格 仿真气枪\r\n气枪价格，气枪专卖店\r\n气枪看货加QQ\r\n气枪联系QQ\r\n气枪猎枪麻醉枪\r\n气枪迷魂药\r\n汽狗高压汽枪\r\n铅弹 上海工字气枪\r\n全金属仿真枪专卖\r\n热武器QQ\r\n三箭气枪出售\r\n手枪气* 枪猎\r\n手槍买卖自制手枪\r\n售枪购买手枪\r\n售手枪QQ\r\n司马仿真枪模型QQ\r\n淘宝气枪货到付款\r\n提供气狗专卖店\r\n提供专业及时的气狗\r\n秃鹰气枪货到付款\r\n锡峰气枪出售\r\n仙鹤气枪出售\r\n销售/专卖/买卖77式手枪\r\n销售电手狗\r\n销售气手狗\r\n销售小口径步枪\r\n销售运动步枪\r\n小口径秃鹰沙漠\r\n有军用枪支出售\r\n长期出 售手枪\r\n折叠狗QQ\r\n转让 猎枪\r\n子弹货到付款\r\n自制手枪哪里买  \r\n自制手枪哪里有卖\r\n阻击枪/汽枪/高压气枪\r\n组装手枪  \r\n最新销售汽狗\r\n出售警用手铐|仿真枪\r\n猎枪|真枪\r\n手枪|阻击枪\r\n弓弩专营\r\n弓弩专卖网货到付款\r\n弓弩专卖网\r\n弓弩专卖货到付款\r\n弓弩专卖店网\r\n弓弩专卖店\r\n弓弩专卖\r\n弓弩制作\r\n弓弩直销\r\n弓弩有限公司\r\n弓弩营销中心\r\n弓弩一百专卖店\r\n弓弩销售\r\n弓弩网 \r\n弓弩网\r\n弓弩图纸\r\n弓弩特许经销\r\n弓弩狩猎网\r\n自制手弩\r\n追风弓弩麻醉箭专卖\r\n专业弓弩网\r\n中国战神军用弓弩\r\n中国弩弓专卖\r\n中国弓弩专卖网\r\n中国弓弩直销\r\n中国弓弩网\r\n中国弓弩狩猎网\r\n中国弓驽网\r\n制作简易弓弩 \r\n郑州弓弩专卖\r\n赵氏弓弩专卖网\r\n赵氏弓弩专卖店\r\n赵氏弓弩专卖\r\n赵氏弓弩销售\r\n小型弓弩专卖店\r\n小猎人弓弩网\r\n狩猎器材弓弩专卖\r\n狩猎器材弓弩\r\n狩猎弓弩专卖网\r\n狩猎弓弩专卖\r\n狩猎弓弩麻醉箭\r\n手枪式折叠三用弩\r\n三利达弓弩专卖网\r\n三利达弓弩直营\r\n三利达弓弩配件\r\n三步倒药箭批发\r\n三步倒弩箭专卖\r\n三步倒麻醉弩箭销售\r\n三步倒麻醉箭专卖\r\n三步倒麻醉箭\r\n三步倒捕狗药\r\n军用弓弩专卖网\r\n军用弓弩专卖店\r\n军用弓弩批发\r\n军用弓弩公司\r\n供应三利达弓弩麻醉箭\r\n供应三步倒麻醉箭\r\n供应秦氏弓弩\r\n供应弩用麻醉箭\r\n供应弩捕狗箭\r\n供应麻醉箭三步倒\r\n供应麻醉箭批发\r\n供应麻醉箭\r\n供应军用弩折叠弩\r\n供应军用弓弩专卖\r\n供应精品弓弩\r\n供应弓弩麻醉箭\r\n供应弓弩\r\n供应钢珠弓弩\r\n弓弩商城专卖\r\n弓弩商城\r\n弓弩亲兄弟货到付款\r\n弓弩批发\r\n弓弩免定金货到付款\r\n弓弩麻醉箭\r\n弓弩麻醉镖\r\n弓弩论坛 \r\n钢珠弓弩专卖网\r\n钢珠弓弩专卖店\r\n打狗弓弩三步倒\r\n麻醉弓弩专卖店\r\n出售军刀\r\n出售军刺\r\n出售弹簧刀\r\n出售三棱刀\r\n出售跳刀\r\n军刀网\r\n南方军刀网\r\n户外军刀网\r\n三棱军刺专卖\r\n出售开山刀军刺\r\n西点军刀网\r\n军刀专 卖\r\n戈博军刀\r\n阿兰德龙户外\r\n出售军品军刀\r\n勃朗宁军刀\r\n军刀军品网\r\n阿兰得龙野营刀具网\r\n出售军刺军刀\r\n警用刀具出售\r\n折刀专卖网\r\n阳江军品军刀网\r\n野营刀专卖\r\n砍刀精品折刀专卖\r\n匕首蝴蝶甩刀专卖\r\n军刀专卖军刺\r\n军刀专卖刀具批发\r\n军刀图片砍刀\r\n军刀网军刀专卖\r\n军刀价格军用刀具\r\n军品军刺网\r\n军刀军刺甩棍\r\n阳江刀具批发网\r\n北方先锋军刀\r\n正品军刺出售\r\n野营军刀出售\r\n开山刀砍刀出售\r\n仿品军刺出售\r\n军刀直刀专卖\r\n手工猎刀专卖\r\n自动跳刀专卖\r\n军刀电棍销售\r\n军刀甩棍销售\r\n美国军刀出售\r\n极端武力折刀\r\n防卫棍刀户外刀具\r\n阿兰德龙野营刀\r\n仿品军刺网\r\n野营砍刀户外军刀\r\n手工猎刀户外刀具\r\n中国户外刀具网\r\n西点军品军刀网\r\n野营开山刀军刺\r\n三利达弓弩军刀\r\n尼泊尔军刀出售\r\n防卫野营砍刀出售\r\n防卫著名军刀出售\r\n防卫棍刀出售\r\n防卫甩棍出售\r\n防卫电棍出售\r\n军刺野营砍刀出售\r\n著名精品折刀出售\r\n战术军刀出售\r\n刺刀专卖网\r\n户外军刀出售\r\n阳江刀具直销网\r\n冷钢刀具直销网\r\n防卫刀具直销网\r\n极端武力直销网\r\n刀具直销网\r\n军刀直销网\r\n直刀匕首直销网\r\n军刀匕首直销网\r\n折刀砍刀军品网\r\n野营刀具军品网\r\n阳江刀具军品网\r\n冷钢刀具军品网\r\n防卫刀具军品网\r\n极端武力军品网\r\n军用刀具军品网\r\n军刀直刀军品网\r\n折刀砍刀专卖\r\n野营刀具专卖\r\n阳江刀具专卖\r\n冷钢刀具专卖\r\n防卫刀具专卖\r\n出售美军现役军刀';
+            if(text.length==0) return true;
+            var word = text.substring(0,1)+"";
+            var words = [];
+            var end = 0;
+            var start = -1;
+            while((start = dict.indexOf('\r\n'+word,end))!=-1){
+                end = dict.indexOf('\r\n',start+1);
+                if(start==-1||end==-1) return false;
+                if(start>end) return false;
+                words.push(dict.substr(start,end-start).replace(/(\r\n|\s)/g,""));
+            }   
+        
+            var tmp = "";
+            for(var j=0;j<words.length;j++){
+                //找到最长的词，当然也可以将所有词保留
+                if(text.indexOf(words[j])!=-1&&words[j].length>tmp.length){
+                    tmp=words[j];
+                }
+            }
+            //词库不存在的词
+            if(tmp == ""){
+                tmp = word;       
+            }
+            text=text.replace(tmp,"");
+            if(tmp.replace(/\s/g,'')!=""){
+                // 文字过滤
+                if(tmp.length>=2){
+                    console.log(tmp);
+                    for(var n = 0; n<tmp.length; n++){
+                        this.filterwords = this.filterwords + '*';
+                    }
+                } 
+                else this.filterwords = this.filterwords + tmp;
+            }
+            this.wordsfilter(text);
+        },
+        // 获取过滤后的句子
+        getFilterWords(thetext){
+            this.wordsfilter(thetext);
+            var temptext = this.filterwords;
+            this.filterwords = '';
+            return temptext;
+        },
+        // 过滤聊天记录
+        doFilter(){ 
+            if(this.chat_list.length>0){      
+                for(var i=0; i<this.chat_list.length; i++){
+                    //console.log(i)
+                    //console.log(this.chat_list[i].message);
+                    //var tempmessage = this.chat_list[i].message
+                    if(this.chat_list[i].message.indexOf("<span class='face face") == -1 && this.chat_list[i].message.indexOf("data:image/") == -1){
+                        console.log(this.chat_list[i].message);
+                        this.chat_list[i].message = this.getFilterWords(this.chat_list[i].message);
+                    }
+                }
+            }
+            if(this.messageList.length>0){      
+                for(var i=0; i<this.messageList.length; i++){
+                    if(this.messageList[i].message.indexOf("<span class='face face") == -1 && this.messageList[i].message.indexOf("data:image/") == -1){
+                        console.log(this.messageList[i].message);
+                        this.messageList[i].message = this.getFilterWords(this.messageList[i].message);
+                    }
+                }
+            }
+        },
     }
 }
 </script>
