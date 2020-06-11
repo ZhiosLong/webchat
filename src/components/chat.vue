@@ -67,8 +67,8 @@
                                 </div>
                                 <div class="user_info">
                                     <div class="user_name">{{ userName==message.user1?message.user2:message.user1 }}</div>
-                                    <div class="user_msg" v-if="message.message.indexOf('data:image/jpeg;base64,') == -1" v-html="message.message"></div>
-                                    <div class="user_msg" v-if="message.message.indexOf('data:image/jpeg;base64,') != -1">[图片]</div>
+                                    <div class="user_msg" v-if="message.message.indexOf('data:image/') == -1" v-html="message.message"></div>
+                                    <div class="user_msg" v-if="message.message.indexOf('data:image/') != -1">[图片]</div>
                                 </div>
                             </div>
                             <div class="other">
@@ -178,7 +178,7 @@
                         <div class="msg_body">
                             <ul id="message" style="padding-left: 0px;">
                                 <div v-for="(chat_content,index) in chat_list" v-bind:key="index">
-                                    <li style="height:50px;width:100%;" v-if="chat_content.message.indexOf('data:image/jpeg;base64,') == -1">
+                                    <li style="height:50px;width:100%;" v-if="chat_content.message.indexOf('data:image/') == -1">
                                         <div v-bind:class="userName===chat_content.source?'send':'receive'">
                                             <div class="the_head" v-show="chat_content.source===userName">
                                                 <img :src=myHead style="width:36px; height:36px;"/>
@@ -197,7 +197,7 @@
                                             </div>
                                         </div>
                                     </li>
-                                    <li style="height:100px;width:100%;" v-if="chat_content.message.indexOf('data:image/jpeg;base64,') != -1">
+                                    <li style="height:100px;width:100%;" v-if="chat_content.message.indexOf('data:image/') != -1">
                                         <div v-bind:class="userName===chat_content.source?'send':'receive'">
                                             <div class="the_head" v-show="chat_content.source===userName">
                                                 <img :src=myHead style="width:36px; height:36px;"/>
@@ -210,7 +210,7 @@
                                                 </div>
                                             </div>
                                             <div class="msg">
-                                                <img v-if="chat_content.message.indexOf('data:image/jpeg;base64,') != -1" style="height:90px;" :src="chat_content.message">
+                                                <img v-if="chat_content.message.indexOf('data:image/') != -1" style="height:90px;" :src="chat_content.message">
                                             </div>
                                         </div>
                                     </li>
@@ -516,7 +516,7 @@ export default {
             // 处理正常结果
             const data = res.data;
             for(var i =0; i<data.result.length; i++){
-                if(data.result[i].indexOf("<span class='face face") == -1 && data.result[i].indexOf("data:image/jpeg;base64,") == -1){
+                if(data.result[i].indexOf("<span class='face face") == -1 && data.result[i].indexOf("data:image/") == -1){
                     //console.log(data.result[i]);
                     this.spiltword(data.result[i]);
                 }
