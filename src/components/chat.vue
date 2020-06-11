@@ -768,6 +768,13 @@ export default {
                 console.log("信息类型不明确!");
             }
         });
+        //监听回车发消息
+        document.onkeyup = function (e) {
+			var code = e.charCode || e.keyCode; 
+			if (code == 13) {  
+			   self.sendMessage();
+			}  
+        };
     },
     beforeDestroy: function(){
     },
