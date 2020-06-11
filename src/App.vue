@@ -58,7 +58,7 @@ export default {
   },
 
   mounted: function(){
-    this.bgIndex_fin = Math.floor(Math.random() * (this.bgSet.length+1));
+    this.bgIndex_fin = Math.floor(Math.random() * (this.bgSet.length));
     console.log("random = ", this.bgIndex_fin);
   },
 
