@@ -509,7 +509,7 @@ export default {
         });
 
         // 请求历史记录并分词
-        // 获取用户头像
+        // 获取词云
         axios.post(
             'https://afwt8c.toutiao15.com/get_words',
             {
@@ -521,7 +521,8 @@ export default {
             for(var i =0; i<data.result.length; i++){
                 if(data.result[i].indexOf("<span class='face face") == -1 && data.result[i].indexOf("data:image/") == -1){
                     //console.log(data.result[i]);
-                    this.spiltword(data.result[i]);
+                    //this.spiltword(data.result[i]);
+                    this.spiltword(this.getFilterWords(data.result[i]));
                 }
             }
         }).catch(function(error) {
