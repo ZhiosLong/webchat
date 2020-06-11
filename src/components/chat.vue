@@ -1444,11 +1444,10 @@ export default {
         // 上传图片
         updataImg(){
             var self = this;
-            var file = document.querySelector('input[type=file]').files[0];
+            var file = document.querySelector('#Updateimage').files[0];
             console.log("base64",file);
             var reader = new FileReader();
             reader.onload = function () {
-                $("#base64Img").attr("src",reader.result);
                 self.imageUrl = reader.result;
                 // console.log(self.imageUrl);
                 // 刷新头像
