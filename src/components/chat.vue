@@ -222,8 +222,8 @@
                 </div>
                 <div :class="['send_box',{'focus':write_flag}]">
                     <div class="top_bar">
-                        <div class="face_icon" title="表情"></div>
-                        <div class="send_image"><input type="file" id="sendImage" lay-verify="required" @change="sendImg()" accept="image"/>
+                        <div class="face_icon" style="float:left" title="表情"></div>
+                        <div class="send_image" style="width:75%;float:left"><input type="file" id="sendImage" lay-verify="required" @change="sendImg()" accept="image"/>
                         </div>
                     </div>
                     <textarea class="text_box" v-model="send_text" @focus="write_flag=1" @focusout="write_flag=0"></textarea>
