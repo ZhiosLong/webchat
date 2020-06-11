@@ -398,7 +398,7 @@ export default {
         request_list:[],
         // 词云形状
         imageShape:'../../static/img/twitter.png',
-        imgList: ['circle','../../static/img/twitter.png'],
+        imgList: ['circle','../../static/img/twitter.png','../../static/img/wordcloud1.png','../../static/img/wordcloud2.png','../../static/img/wordcloud3.png','../../static/img/wordcloud4.jpg','../../static/img/wordcloud5.png','../../static/img/wordcloud6.png','../../static/img/wordcloud7.png','../../static/img/wordcloud8.png',],
         img_show: -1,
         maxFontSize: 60,
         minFontSize: 12,
