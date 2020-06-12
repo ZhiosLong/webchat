@@ -13,7 +13,7 @@ export default new Router({
       name: 'login',
       component: login,
       meta:{
-        title:'Home',    // 网页标题名
+        title:'Login',    // 网页标题名
       }
     },
     {
@@ -22,7 +22,7 @@ export default new Router({
       component: chat,
       meta:{
         title:'Chat',
-        needLogin:true,   // 需要登录才能进入
+        //needLogin:true,   // 需要登录才能进入
       }
     }
   ]
