@@ -1,6 +1,6 @@
 <template>
   <div>
-  	<div class="login_box" onmouseout="style.opacity='0.5'" onmouseover="style.opacity='1'">
+  	<div class="login_box" onmouseout="style.opacity='0.8'" onmouseover="style.opacity='1'">
       <el-tabs type="border-card">
         <el-tab-pane label="Log in">
           <div class="top_bar">
@@ -132,7 +132,7 @@ export default {
 
 <style scoped>
 	.login_box {
-    opacity: 0.5;
+    opacity: 0.8;
 		width: 350px;
 		height: 500px;
 		background: #f5f5f5;
