@@ -270,7 +270,6 @@
                         <ul v-for="(friend,index) in friendList" v-bind:key="index">
                             <li v-if="index==friend_show">
                                 <hr class="friendLine"><br>
-<<<<<<< HEAD
                                 <p class="hehe">
                                     <span>备注：</span>
                                     <span v-show="button_show==0">{{friend.friendNickname}}</span>
@@ -278,15 +277,6 @@
                                     <button @click="button_show=1" v-show="button_show==0">编辑</button>
                                     <button @click="setFriendNickname(index)" v-show="button_show==1">修改</button>
                                 </p>
-=======
-                                <p class="hehe">
-                                    <span>备注：</span>
-                                    <span v-show="button_show==0">{{friend.friendNickname}}</span>
-                                    <input type="text"  v-model="tempNickname" placeholder="" v-show="button_show==1">
-                                    <button @click="button_show=1" v-show="button_show==0">编辑</button>
-                                    <button @click="setFriendNickname(index)" v-show="button_show==1">修改</button>
-                                </p >
->>>>>>> master
                                 <p class="hehe"><span>地区：</span>{{friend_info.region}}</p>
                                 <p class="hehe"><span>用户名：</span>{{friend_info.userName}}</p>
                                 <br><hr class="friendLine">
@@ -422,17 +412,10 @@ export default {
         wordList: [],
         // 过滤信息
         filterwords: '',
-<<<<<<< HEAD
         // 当前备注
         tempNickname: '',
         // 显示修改input
         button_show: 0,
-=======
-        // 当前备注
-        tempNickname: '',
-        // 显示修改input
-        button_show: 0,
->>>>>>> master
         }
     },
     created:function(){
@@ -544,16 +527,8 @@ export default {
             const data = res.data;
             for(var i =0; i<data.result.length; i++){
                 if(data.result[i].indexOf("<span class='face face") == -1 && data.result[i].indexOf("data:image/") == -1){
-                    //console.log(data.result[i]);
-<<<<<<< HEAD
-<<<<<<< HEAD
-                    //this.spiltword(data.result[i]);
-=======
->>>>>>> master
                     this.spiltword(this.getFilterWords(data.result[i]));
-=======
                     this.spiltword(data.result[i]);
->>>>>>> parent of 3a98714b... Merge branch 'master' into Guo-Zhilun
                 }
             }
         }).catch(function(error) {
