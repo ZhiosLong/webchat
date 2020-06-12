@@ -39,15 +39,9 @@
                         <span></span>
                         <span></span>
                     </div>
-                    <div style="text-align: left;" class="more_box"  v-show="setbox_show" @click="setbox_show=0">
-                        
-                        <div id="logout_icon"> <i class="fa fa-sign-out fa-fw" aria-hidden="false" ></i></div>                        
-                        <div class="logout" @click="logout();alterbox_show=0" onmouseover="style.color='red'" onmouseout="style.color='white'">退出登录</div>    
-
-                        <div id="setting_icon"><i class="fa fa-cog fa-fw" aria-hidden="false" ></i></div>                      
-                        <div class="setting" @click="configbox_show=1" onmouseover="style.color='skyblue'" onmouseout="style.color='white'">设置</div>
-
-                        
+                    <div style="text-align: left;" class="more_box" v-show="setbox_show" @click="setbox_show=0">
+  						<div class="logout" @click="logout();alterbox_show=0">退出登录</div>
+                        <div class="setting" @click="configbox_show=1">设置</div>
   					</div>
 
                 </div>
@@ -55,12 +49,11 @@
                 <div class="online_box">
 
                     <!--搜索框-->
-                    <div class="search_box" v-show="icon_show==0||icon_show==1||icon_show==3">
+                    <div class="search_box" v-show="icon_show==0||icon_show==1">
                         <div class="search_bar">
-                            <input type="text" v-model="searchName" placeholder="搜索"/>                            
-                            <div class="search_icon" @click="searchUser(3)" onmouseover="style.color='royalblue'" onmouseout="style.color='black'">
-                                <i class="fa fa-search" aria-hidden="true"></i>
-                                </div>
+                            <input type="text" v-model="searchName" placeholder="搜索"/>
+                            <div class="add">+</div>
+                            <div class="search_icon" @click="searchUser(3)"></div>
                         </div>
                     </div>
 
@@ -73,7 +66,7 @@
                                     <!--<span class="fubiao"></span>-->
                                 </div>
                                 <div class="user_info">
-                                    <div class="user_name">{{ message.friendNickname }}</div>
+                                    <div class="user_name">{{ userName==message.user1?message.user2:message.user1 }}</div>
                                     <div class="user_msg" v-if="message.message.indexOf('data:image/') == -1" v-html="message.message"></div>
                                     <div class="user_msg" v-if="message.message.indexOf('data:image/') != -1">[图片]</div>
                                 </div>
@@ -126,31 +119,13 @@
                         </li>
                     </ul>
 
-                    <!--搜索结果-->
                     <ul class="online_list" v-show="icon_show==3">
                         <div class="noUser" v-show="userList.length == 0 && linkmanList.length == 0">
-                            <div>
-                                <span class="fa-stack fa-lg">
-                                    <i class="fa fa-user-o fa-stack-1x"></i>
-                                    <i class="fa fa-ban fa-stack-2x text-danger"></i>
-                                </span>
-                            </div>
-                            <div>无结果</div>
+                            <div>提示：没有匹配的结果</div>
                         </div>
                         <div class="noUser" v-show="userList.length != 0">
-                            <div style="margin-bottom:30px">
-                                <i class="fa fa-user-circle fa-2x" aria-hidden="true"></i>
-                                <span>陌生人</span>
-                            </div>                            
-                            <div v-show="userList.length == 0">
-                                <div>
-                                    <span class="fa-stack fa-lg">
-                                        <i class="fa fa-user-o fa-stack-1x"></i>
-                                        <i class="fa fa-ban fa-stack-2x text-danger"></i>
-                                    </span>
-                                </div>
-                                <div>用户不存在</div>
-                            </div>
+                            <p>用户:</p>
+                            <div v-show="userList.length == 0">提示：用户不存在</div>
                         </div>
                         <li style="margin-left: -40px;" @click="showUserInfo(index)" v-for="(user,index) in userList" v-bind:key="'user' + index">
                             <div class="info">
@@ -164,19 +139,8 @@
                             </div>
                         </li>
                         <div class="noUser" v-show="linkmanList.length != 0">
-                            <div style="margin-bottom:30px">
-                                <i class="fa fa-address-book-o fa-2x" aria-hidden="true"></i>
-                                <span>联系人</span>
-                            </div>                            
-                            <div v-show="linkmanList.length == 0">
-                                <div>
-                                    <span class="fa-stack fa-lg">
-                                        <i class="fa fa-address-book-o fa-stack-1x"></i>
-                                        <i class="fa fa-ban fa-stack-2x text-danger"></i>
-                                    </span>
-                                </div>
-                                <div>联系人不存在</div>
-                            </div>
+                            <p>联系人:</p>
+                            <div v-show="linkmanList.length == 0">提示：联系人不存在</div>
                         </div>
                         <li style="margin-left: -40px;" @click="jumpMessage_Search(index)" v-for="(linkman,index) in linkmanList" v-bind:key="'linkman' + index">
                             <div class="info">
@@ -256,7 +220,7 @@
                         <div class="face_icon" title="表情"></div>
                         <div class="send_image">
                             <div id="send_image1"><i class="fa fa-file-image-o fa-2x" aria-hidden="true"></i></div>
-                            <div id="send_image2"><input type="file" id="sendImage" lay-verify="required" @change="sendImg()" accept="image"/></div>                    
+                            <div id="send_image2"><input type="file" id="sendImage" lay-verify="required" @change="sendImg()" accept="image"/></div>                    
                         </div>
                     </div>
                     <textarea class="text_box" v-model="send_text" @focus="write_flag=1" @focusout="write_flag=0"></textarea>
@@ -336,7 +300,7 @@
 
             <!--词云-->
             <div class="panel_right" v-show="icon_show==2">
-                <div id="word_icon" style="margin-top:15px"><i class="fa fa-wordpress fa-3x" aria-hidden="true"></i></div>             
+                <h1 class="newfriend_titile">词云</h1>
                 <br/>
                 <div id="wordcloudtest" style="height: 550px; width: 550px; margin: 0 auto;" />
             </div>
@@ -582,10 +546,14 @@ export default {
                 if(data.result[i].indexOf("<span class='face face") == -1 && data.result[i].indexOf("data:image/") == -1){
                     //console.log(data.result[i]);
 <<<<<<< HEAD
+<<<<<<< HEAD
                     //this.spiltword(data.result[i]);
 =======
 >>>>>>> master
                     this.spiltword(this.getFilterWords(data.result[i]));
+=======
+                    this.spiltword(data.result[i]);
+>>>>>>> parent of 3a98714b... Merge branch 'master' into Guo-Zhilun
                 }
             }
         }).catch(function(error) {
@@ -1216,6 +1184,16 @@ export default {
                 this.chat_list.push(msg);
                 this.doFilter();
                 this.send_text = '';
+                for(let i = 0;i < this.messageList.length;i++)
+                {
+                    let tempName = (this.messageList[i].user1 == this.userName ? this.messageList[i].user2 : this.messageList[i].user1);
+                    if(msg.des == tempName)
+                    {
+                        this.messageList[i].message = msg.message;
+                        break;
+                    }
+                    this.doFilter();
+                }
                 axios.post(
                     'https://afwt8c.toutiao15.com/add_chat_record',
                     {
@@ -1315,38 +1293,34 @@ export default {
         //搜索好友
         searchUser(index){
             console.log(this.searchName);
-            if(this.searchName != '')
-            {
-                axios.post(
-                    'https://afwt8c.toutiao15.com/search_user',
-                    {
-                        userName:this.userName,
-                        searchName:this.searchName
-                    }
-                ).then((res)=>{
-                    // 处理正常结果
-                    const data = res.data;
-                    console.log(data.result);
-                    this.userList = [];
-                    this.linkmanList = [];
-                    for(let i = 0;i < data.result.length;i++)
-                    {
-                        if(data.result[i]['isFriend'])
-                            this.linkmanList.push(data.result[i]);
-                        else
-                            this.userList.push(data.result[i]);
-                    }
-                }).catch(function(error) {
-                    // 处理异常结果
-                    console.log(JSON.stringify(error));
-                    console.log(error.result);
-                }).finally(function() {
-                    console.log('查找成功');
-                })
-                this.icon_show=index;
-                this.not_add=0;
-                this.searchName = '';
-            }
+            axios.post(
+                'https://afwt8c.toutiao15.com/search_user',
+                {
+                    userName:this.userName,
+                    searchName:this.searchName
+                }
+            ).then((res)=>{
+                // 处理正常结果
+                const data = res.data;
+                console.log(data.result);
+                this.userList = [];
+                this.linkmanList = [];
+                for(let i = 0;i < data.result.length;i++)
+                {
+                    if(data.result[i]['isFriend'])
+                        this.linkmanList.push(data.result[i]);
+                    else
+                        this.userList.push(data.result[i]);
+                }
+            }).catch(function(error) {
+                // 处理异常结果
+                console.log(JSON.stringify(error));
+                console.log(error.result);
+            }).finally(function() {
+                console.log('查找成功');
+            })
+            this.icon_show=index;
+            this.not_add=0;
         },
 
         // 查看用户个人资料
@@ -1801,6 +1775,7 @@ export default {
                     //console.log(this.chat_list[i].message);
                     //var tempmessage = this.chat_list[i].message
                     if(this.chat_list[i].message.indexOf("<span class='face face") == -1 && this.chat_list[i].message.indexOf("data:image/") == -1){
+                        console.log(this.chat_list[i].message);
                         this.chat_list[i].message = this.getFilterWords(this.chat_list[i].message);
                     }
                 }
@@ -1808,6 +1783,7 @@ export default {
             if(this.messageList.length>0){      
                 for(var i=0; i<this.messageList.length; i++){
                     if(this.messageList[i].message.indexOf("<span class='face face") == -1 && this.messageList[i].message.indexOf("data:image/") == -1){
+                        console.log(this.messageList[i].message);
                         this.messageList[i].message = this.getFilterWords(this.messageList[i].message);
                     }
                 }
@@ -2016,7 +1992,18 @@ export default {
     .confirm>button:active{
         background: #3c3c3c;
     }
-    
+    .logout{
+        font-size: 20px;
+        color: #ff0000;
+        cursor: pointer;
+        outline:none;
+    }
+    .setting{
+        font-size: 20px;
+        color: #8c8c8c;
+        cursor: pointer;
+        outline:none;
+    }
     .icon_list {
         width: 35px;
         margin: 0 auto;
@@ -2056,21 +2043,20 @@ export default {
         height: 100%;
     }
     .search_bar input {
-        width: 180px;
+        width: 190px;
         outline: none;
-        font-size: 15px;
+        font-size: 12px;
         padding-left: 2px;
         float: left;
     }
     .search_bar .search_icon {
-        background:#eeeae8;
         width: 25px;
         position: absolute;
         top: 0;
-        right: 10px;
-        top:4px;
+        right: 36px;
+        background: url(../../static/img/find.png);
+        background-size: 100% 100%;
         border: none;
-        cursor: pointer;
     }
     .search_bar .focus {
         background: #f2efee;
@@ -2140,9 +2126,8 @@ export default {
         font-size: 14px;
         float: right;
         color: #111;
-        padding-left: 30px;
+        padding-left: 10px;
         box-sizing: border-box;
-        text-align: left;
     }
     .online_list li .info .user_msg {
         overflow: hidden;
@@ -2151,14 +2136,13 @@ export default {
         font-size: 12px;
         margin-top: 4px;
         color: #999;
-        padding-left: 3px;
     }
     .online_list .noUser{
-        margin-left: -80px;
-        margin-top: 50px;
+        margin-left: -40px;
+        margin: 1px;
     }
     .online_list .noUser p{
-        text-align: middle;
+        text-align: left;
         color: gray;
     }
     .panel_right .msg_box {
@@ -2352,8 +2336,8 @@ export default {
         margin-top: 6px;
     }
     .left_bar .more_box {
-        width: 140px;
-        height: 90px;
+        width: 134px;
+        height: 92px;
         background: #323232;
         position: absolute;
         z-index: 1000;
@@ -2361,49 +2345,19 @@ export default {
         bottom: 14px;
 
     }
+    .left_bar .more_box>div {
+        width: 100%;
+        height: 46px;
 
-    #logout_icon{
-        float:left;
-        height: 45px;
-        width:20px;
-        line-height: 45px;
-        padding-left: 10px;
-        color:red;
-    }
-
-    .logout{
-        float:left;
-        color: white;
-        width:100px;     
-        height: 45px;
         font-size: 14px;
-        line-height: 45px;
-        padding-left: 10px;
+        line-height: 46px;
+        padding-left: 12px;
         box-sizing: border-box;
         cursor: pointer;
     }
-
-    #setting_icon{
-        float:left;
-        height: 45px;
-        width:20px;
-        padding-left: 10px;
-        line-height: 45px;
-        color:skyblue;
+    .left_bar .more_box>div:hover {
+        background: #3c3c3c;
     }
-
-    .setting{
-        float:left;
-        color: white;
-        width:100px;     
-        height: 45px;
-        font-size: 14px;
-        line-height: 45px;
-        padding-left: 10px;
-        box-sizing: border-box;
-        cursor: pointer;
-    }   
-
     .sendEmpty {
         width: 114px;
         height: 34px;
