@@ -3,10 +3,27 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>webchat</title>
+    <title>theproject</title>
+    <link rel="bookmark" type="image/x-icon" href="static/img/favicon.ico"/>
+    <link rel="shortcut icon" href="static/img/favicon.ico">
+    <link rel="stylesheet" type="text/css" href="static/css/face.css"/>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.staticfile.org/axios/0.18.0/axios.min.js"></script>
+    <script src="https://cdn.bootcss.com/lodash.js/4.17.15/lodash.min.js"></script>
+    <script src="static/js/socket.io.js"></script>
+    <script src="static/js/dist/js2wordcloud.min.js"></script>
   </head>
   <body>
     <div id="app"></div>
+    <script type="text/javascript">
+      var socket = io.connect("http://127.0.0.1:3000");
+      setTimeout(function(){
+        if(socket.connect == false){
+          alert("服务器暂时关闭！");
+        }
+      },1000)
+    </script>
     <!-- built files will be auto injected -->
   </body>
+  <script src="static/js/face.js"></script>
 </html>
