@@ -306,7 +306,7 @@
                         <ul v-for="(friend,index) in friendList" v-bind:key="index">
                             <li v-if="index==friend_show">
                                 <hr class="friendLine"><br>
-                                 <p class="hehe">
+                                <p class="hehe">
                                     <span>备注：</span>
                                     <span v-show="button_show==0">{{friend.friendNickname}}</span>
                                     <input type="text"  v-model="tempNickname" placeholder="" v-show="button_show==1">
@@ -1102,7 +1102,6 @@ export default {
             }).finally(function() {
                 console.log('修改备注成功');
             })
-
             // 请求消息列表
             axios.post(
                 'https://afwt8c.toutiao15.com/get_message_list',
@@ -1326,7 +1325,7 @@ export default {
         showUserInfo(index){
             this.not_add=1;
             this.userInfo=this.userList[index];
-            this.default_note="我是" + this.userInfo['nickname'];
+            this.default_note="我是" + this.userName;
         },
 
         // 添加好友
@@ -1335,7 +1334,8 @@ export default {
                 'https://afwt8c.toutiao15.com/add_friend',
                 {
                     userName:this.userName,
-                    friendName:this.userInfo['userName']
+                    friendName:this.userInfo['userName'],
+                    note:this.default_note
                 }
             ).then((res)=>{
                 // 处理正常结果
