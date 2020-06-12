@@ -1102,6 +1102,24 @@ export default {
             }).finally(function() {
                 console.log('修改备注成功');
             })
+            // 请求消息列表
+            axios.post(
+                'https://afwt8c.toutiao15.com/get_message_list',
+                {
+                    userName: this.userName
+                }
+            ).then((res)=>{
+                // 处理正常结果
+                const data = res.data;
+                this.messageList = data.result;
+                this.doFilter();
+            }).catch(function(error) {
+                // 处理异常结果
+                console.log(JSON.stringify(error));
+                console.log(error.result);
+            }).finally(function() {
+                console.log('请求最近消息列表成功');
+            });
         },
 
         // 修改头像昵称

@@ -12,7 +12,6 @@ app.use(function(req,res){
 
 var user_socket = {};
 io.on("connection", function(socket){
-    console.log("连接成功");
     var username;
     socket.once('user_info', (user_info) => {
         user_socket[user_info.username] = socket;
