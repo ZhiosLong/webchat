@@ -576,10 +576,10 @@ export default {
         });
 
         // 与服务器建立连接，持续监听服务器发来的消息
-        socket.emit('user_info', {
+        this.$socket.emit('user_info', {
             username: this.userName,
         });
-        socket.on(this.userName, function(msg){
+        this.$socket.on(this.userName, function(msg){
             // 收到的信息类型为：消息
             if(msg.type == "message"){
                 let isFront = 0;

@@ -6,9 +6,17 @@ import router from './router'
 import VueWechatTitle from 'vue-wechat-title'
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
+import VueSocketio from 'vue-socket.io';
+import socketio from 'socket.io-client';
 
 Vue.use(ElementUI);
 Vue.use(VueWechatTitle)             // 引入该插件用于修改网页标题
+// 使用vue-socketio
+Vue.use(new VueSocketio({
+  debug: true,
+  connection:'http://127.0.0.1:3000',
+}))
+
 Vue.config.productionTip = false
 
 
