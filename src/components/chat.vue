@@ -621,7 +621,7 @@ export default {
                         isFront = 0;
                     }
                 }
-                if(self.icon_show == 0)
+                if(this.icon_show == 0)
                 {
                     // 刷新最近消息列表
                     axios.post(
@@ -691,7 +691,7 @@ export default {
                         console.log(error.result);
                     }).finally(function() {
                         console.log('请求最近消息列表成功');
-                        console.log('icon_show:'+self.icon_show);
+                        console.log('icon_show:'+this.icon_show);
                     });
                 }
                 // 发来消息的好友在选中好友的下面
@@ -1563,10 +1563,10 @@ export default {
                 reader.readAsDataURL(file);
             }
         },
-        /*goBack () {
+        goBack () {
             let href = window.location.href
             window.location.href = href.split('#')[0]
-        },*/
+        },
 
         // 修改用户信息
         changeInformation(){
