@@ -1,7 +1,7 @@
 <template>
 
   <div id="app" :style="{ backgroundImage:'url(../static/bg/' + bgSet[bgIndex_fin] + ')'}">
-    <div id="setting" onmouseout="style.opacity='0.5'" onmouseover="style.opacity='1'">
+    <div id="setting" onmouseout="style.opacity='0.8'" onmouseover="style.opacity='1'">
       <i class="fa fa-cog fa-2x" aria-hidden="true" @click="setBgBox()"></i>
       <div id="bgBox" v-show="bgBox_show">
         <div id="changeBg" @click="bgBox_show=1">

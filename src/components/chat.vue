@@ -256,7 +256,8 @@
                         <div class="face_icon" title="表情"></div>
                         <div class="send_image">
                             <div id="send_image1"><i class="fa fa-file-image-o fa-2x" aria-hidden="true"></i></div>
-                            <div id="send_image2"><input type="file" id="sendImage" lay-verify="required" @change="sendImg()" accept="image"/></div>                    
+                            <div id="send_image2"><input type="file" id="sendImage" lay-verify="required" @change="sendImg()" accept="i
+                            mage"/></div>                    
                         </div>
                     </div>
                     <textarea class="text_box" v-model="send_text" @focus="write_flag=1" @focusout="write_flag=0"></textarea>
